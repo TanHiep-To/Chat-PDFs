@@ -1,3 +1,8 @@
 .env
 __pycache__/
 myenv/
+
+backend/__pycache__/
+backend/.env
+backend/myenv/
+backend/env/

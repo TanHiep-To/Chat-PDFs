@@ -8,16 +8,8 @@ from langchain.vectorstores import faiss
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.chat_models import ChatOpenAI
 from htmlTemplates import css, bot_template, user_template
-import transformers
-import torch
-from langchain_core.messages import (
-    HumanMessage,
-    SystemMessage,
-)
 from langchain_community.llms import Cohere
-from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
 import os
 
 load_dotenv()
