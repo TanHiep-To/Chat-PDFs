@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "swagger-jsdoc": "^6.2.8"
+  },
+  "devDependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
+    "i": "^0.3.7",
+    "npm": "^10.8.1"
+  }
+}
