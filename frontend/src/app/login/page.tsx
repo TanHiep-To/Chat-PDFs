@@ -1,10 +1,10 @@
-import FileUploadButton from "@/components/FileUploadButton";
+import Login from "@/components/Login";
 import React from "react";
 
 export default function page() {
   return (
     <div>
-      <FileUploadButton />
+      <Login />
     </div>
   );
 }

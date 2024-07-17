@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Message } from "../message/message.entity";
 import { Role } from "./user.interface";
+import { Service } from "typedi";
 
 @Entity("users")
 export class User {

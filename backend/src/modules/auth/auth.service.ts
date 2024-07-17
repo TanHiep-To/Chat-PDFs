@@ -3,8 +3,6 @@ import { genToken } from "../../utils/jwt";
 import { comparePassword, hashPassword } from "../../utils/password";
 import { User } from "../user/user.entity";
 import { Role } from "../user/user.interface";
-import { UserService } from "../user/user.service";
-import { IAuthService } from "./auth.interface";
 
 export class AuthService {
   private userRepository = AppDataSource.getRepository(User);

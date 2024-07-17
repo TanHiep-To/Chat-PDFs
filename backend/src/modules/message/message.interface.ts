@@ -1,5 +1,10 @@
 // export interface IMessage {
 //   id: string;
 //   message: string;
-//   sender: IUser;
 // }
+
+export interface ICreateMessagePayload {
+  text: string;
+  userId: string;
+  fileId: string;
+}

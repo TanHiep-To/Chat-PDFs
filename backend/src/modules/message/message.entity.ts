@@ -7,21 +7,21 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "../user/user.entity";
+import { File } from "../file/file.entity";
 
 @Entity("message")
 export class Message {
   @PrimaryGeneratedColumn("uuid", { name: "id" })
   id: number;
 
-  @Column("nvarchar", { length: 255, nullable: false, name: "text" })
+  @Column("varchar", { length: 255, nullable: false, name: "text" })
   text: string;
 
-  @Column()
   @ManyToOne(() => User, (user) => user.messages)
   user: User;
 
-  // @Column()
-  // file:
+  @ManyToOne(() => File, (file) => file.messages)
+  file: File;
 
   @CreateDateColumn()
   createdAt: Date;
