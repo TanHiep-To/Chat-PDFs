@@ -1,21 +1,23 @@
 import express from "express";
-import authRouter from "./modules/auth/auth.router";
-import UserRouter from "./modules/user/user.router";
-import swaggerUi from "swagger-ui-express";
-import { swaggerConfig } from "./config/swagger";
+// import cookieParser from "cookie-parser";
+import { AuthRouter } from "./modules/auth/auth.router";
+import { UserRouter } from "./modules/user/user.router";
 import cors from "./config/cors";
+import { MessageRouter } from "./modules/message/message.router";
+import globalErrorHandler from "./middlewares/globalErrorHandler";
 
-// Container.set("dataSource", AppDataSource);
 const app = express();
 
 app.use(cors);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
-// const userRouter = Container.get(UserRouter);
-
+app.use("/auth", AuthRouter);
 app.use("/users", UserRouter);
-app.use("/auth", authRouter);
+app.use("/messages", MessageRouter);
+// app.use("/files", FileR)
+
+// global error handler
+app.use(globalErrorHandler);
 
 export default app;

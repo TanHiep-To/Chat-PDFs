@@ -9,6 +9,7 @@ import {
 import { Message } from "../message/message.entity";
 import { Role } from "./user.interface";
 import { Service } from "typedi";
+import { File } from "../file/file.entity";
 
 @Entity("users")
 export class User {
@@ -31,11 +32,18 @@ export class User {
   })
   email: string;
 
-  @Column("varchar", { length: 255, nullable: false, name: "password" })
+  @Column("varchar", {
+    length: 255,
+    nullable: false,
+    name: "password",
+  })
   password: string;
 
-  @OneToMany(() => Message, (message) => message.user)
-  messages: Message[];
+  // @OneToMany(() => Message, (message) => message.user)
+  // messages: Message[];
+
+  @OneToMany(() => File, (file) => file.user)
+  files: File[];
 
   @Column("enum", { enum: Role, default: Role.USER, name: "role" })
   role: Role;

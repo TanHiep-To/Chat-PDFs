@@ -14,6 +14,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { handleRegister } from "@/app/register/actions";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 function Copyright(props: any) {
   return (
@@ -35,13 +38,16 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function Register() {
+  const { toast } = useToast();
+  const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const firstName = data.get("firstName") as string;
+    const lastName = data.get("lastName") as string;
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    handleRegister(toast, router, { firstName, lastName, email, password });
   };
 
   return (

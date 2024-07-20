@@ -1,57 +1,58 @@
+import ApiError from "../../common/ApiError";
 import { AppDataSource } from "../../config/dataSource";
 import { genToken } from "../../utils/jwt";
 import { comparePassword, hashPassword } from "../../utils/password";
 import { User } from "../user/user.entity";
 import { Role } from "../user/user.interface";
 
-export class AuthService {
-  private userRepository = AppDataSource.getRepository(User);
-  constructor() {}
-  async register(
-    name: string,
-    email: string,
-    password: string,
-    role: Role = Role.USER
-  ): Promise<User> {
-    if (!email || !password) {
-      throw new Error("Email and password are required");
-    }
-    const existingUser = await this.userRepository.findOneBy({ email });
-    if (existingUser) {
-      throw new Error("User already exists");
-    }
-    const hashedPassword = await hashPassword(password);
-    return this.userRepository.save({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-    });
+const register = async (
+  name: string,
+  email: string,
+  password: string,
+  role: Role = Role.USER
+): Promise<User> => {
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
+  const existingUser = await AppDataSource.getRepository(User).findOneBy({
+    email,
+  });
+  if (existingUser) {
+    throw new ApiError(400, "User already exists");
+  }
+  const hashedPassword = await hashPassword(password);
+  return AppDataSource.getRepository(User).save({
+    name,
+    email,
+    password: hashedPassword,
+    role,
+  });
+};
+
+const login = async (email: string, password: string): Promise<string> => {
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
+  const user = await AppDataSource.getRepository(User).findOneBy({ email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
 
-  async login(email: string, password: string): Promise<string> {
-    if (!email || !password) {
-      throw new Error("Email and password are required");
-    }
-    const user = await this.userRepository.findOneBy({ email });
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    if (!comparePassword(password, user.password)) {
-      throw new Error("Invalid password");
-    }
-
-    const token = await genToken({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    });
-
-    return token;
+  if (!comparePassword(password, user.password)) {
+    throw new ApiError(400, "Invalid password");
   }
-}
 
-const authService = new AuthService();
-export default authService;
+  const token = await genToken({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  });
+
+  return token;
+};
+
+export const AuthService = {
+  register,
+  login,
+};

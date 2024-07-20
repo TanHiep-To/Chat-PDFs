@@ -3,8 +3,8 @@ import React from "react";
 
 export default function page() {
   return (
-    <div>
+    <main className="flex flex-col p-4">
       <Login />
-    </div>
+    </main>
   );
 }

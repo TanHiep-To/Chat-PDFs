@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Message } from "../message/message.entity";
 import { Service } from "typedi";
+import { User } from "../user/user.entity";
 
 export enum FileStatus {
   FAILED = "FAILED",
@@ -16,7 +18,12 @@ export enum FileStatus {
   PENDING = "PENDING",
 }
 
-@Service("fileEntity")
+export enum FileType {
+  PDF = "PDF",
+  TXT = "TXT",
+  DOC = "DOC",
+}
+
 @Entity("files")
 export class File {
   @PrimaryGeneratedColumn("uuid", { name: "id" })
@@ -25,7 +32,6 @@ export class File {
   @Column("varchar", {
     length: 255,
     nullable: false,
-    unique: false,
     name: "name",
   })
   name: string;
@@ -33,7 +39,6 @@ export class File {
   @Column("varchar", {
     length: 255,
     nullable: false,
-    unique: false,
     name: "url",
   })
   url: string;
@@ -41,7 +46,6 @@ export class File {
   @Column("varchar", {
     length: 255,
     nullable: false,
-    unique: false,
     name: "key",
   })
   key: string;
@@ -49,7 +53,6 @@ export class File {
   @Column("varchar", {
     length: 255,
     nullable: false,
-    unique: false,
     name: "status",
     default: FileStatus.PENDING,
   })
@@ -57,10 +60,18 @@ export class File {
 
   @Column("varchar", {
     length: 255,
-    unique: false,
     name: "size",
   })
   size: number;
+
+  @Column("varchar", {
+    length: 255,
+    name: "type",
+  })
+  type: FileType;
+
+  @ManyToOne(() => User, (user) => user.files)
+  user: User;
 
   @OneToMany(() => Message, (message) => message.file)
   messages: Message[];

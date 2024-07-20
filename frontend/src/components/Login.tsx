@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,6 +14,11 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { handleLogin } from "@/app/login/actions";
+import { getCookie } from "cookies-next";
+import { redirect } from "next/navigation";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 function Copyright(props: any) {
   return (
@@ -23,12 +28,9 @@ function Copyright(props: any) {
       align="center"
       {...props}
     >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
+      {"TKPM-HCMUS "}
+
       {new Date().getFullYear()}
-      {"."}
     </Typography>
   );
 }
@@ -37,14 +39,23 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function Login() {
+  const { toast } = useToast();
+  const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    handleLogin(toast, router, { email, password });
   };
+
+  useEffect(() => {
+    const token = getCookie("token");
+
+    if (token) {
+      router.push("/dashboard");
+    }
+  });
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -104,12 +115,12 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="/forgot-password" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

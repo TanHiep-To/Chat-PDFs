@@ -1,4 +1,3 @@
-import { generateReactHelpers } from "@uploadthing/react/hooks";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -31,7 +30,7 @@ export const ourFileRouter = {
       return { uploadedBy: metadata.userId };
     }),
 
-  pdfUploader: f({ pdf: { maxFileSize: "8MB" } })
+  pdfUploader: f({ pdf: { maxFileSize: "32MB" } })
     .middleware(async ({ req }) => {
       console.log("middleware for pdfUploader");
       const user = await auth(req);
@@ -46,4 +45,3 @@ export const ourFileRouter = {
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
-export const { useUploadThing } = generateReactHelpers<OurFileRouter>();

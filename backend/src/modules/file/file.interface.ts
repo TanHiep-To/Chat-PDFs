@@ -1,4 +1,4 @@
-import { FileStatus } from "./file.entity";
+import { FileStatus, FileType } from "./file.entity";
 
 export interface IFile {
   id: string;
@@ -7,6 +7,7 @@ export interface IFile {
   key: string;
   size: number;
   status: FileStatus;
+  type: FileType;
 }
 
 export interface ICreateFilePayload {
@@ -15,4 +16,5 @@ export interface ICreateFilePayload {
   key: string;
   size: number;
   status: FileStatus;
+  type: FileType;
 }

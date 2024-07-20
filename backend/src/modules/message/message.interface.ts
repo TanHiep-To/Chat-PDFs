@@ -1,10 +1,14 @@
-// export interface IMessage {
-//   id: string;
-//   message: string;
-// }
+export interface IMessage {
+  id: string;
+  content: string;
+  isAsked: boolean;
+  fileId: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 export interface ICreateMessagePayload {
-  text: string;
-  userId: string;
+  content: string;
   fileId: string;
+  isAsked?: boolean;
 }
