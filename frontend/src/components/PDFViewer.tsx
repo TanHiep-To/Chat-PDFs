@@ -1,13 +1,33 @@
 import { useState } from "react";
 
 import SimpleBar from "simplebar-react";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import { Expand, Loader2 } from "lucide-react";
 import { useResizeDetector } from "react-resize-detector";
 
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { useToast } from "./ui/use-toast";
+
+if (typeof Promise.withResolvers === "undefined") {
+  if (window)
+    // @ts-expect-error This does not exist outside of polyfill which this is doing
+    window.Promise.withResolvers = function () {
+      let resolve, reject;
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    };
+}
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.min.mjs",
+//   import.meta.url
+// ).toString();
 
 interface Props {
   url: string;
@@ -18,6 +38,16 @@ const PDFViewer = ({ url }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { width, ref } = useResizeDetector();
   const { toast } = useToast();
+
+  // const changePage = (offset: number) => {
+  //   setNumberPages((prevPageNumber) => prevPageNumber + offset);
+  // };
+  // const previousPage = () => {
+  //   changePage(-1);
+  // };
+  // const nextPage = () => {
+  //   changePage(+1);
+  // };
   return (
     <Dialog
       open={isOpen}

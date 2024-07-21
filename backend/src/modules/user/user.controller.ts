@@ -2,6 +2,23 @@ import * as Express from "express";
 import { UserService } from "./user.service";
 import { getErrorMessage } from "../../common/error";
 
+const me = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { user } = req.body;
+    res.status(200).json({
+      success: true,
+      data: user,
+      message: "User found",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const create = async (
   req: Express.Request,
   res: Express.Response,
@@ -62,4 +79,5 @@ export const UserController = {
   create,
   findAll,
   findById,
+  me,
 };

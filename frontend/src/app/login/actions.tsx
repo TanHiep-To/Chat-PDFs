@@ -2,12 +2,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { SERVER_API_URL } from "@/lib/config/const";
 import { IResponse, IToast } from "@/lib/interfaces";
 import axios from "axios";
-import { setCookie } from "cookies-next";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const handleLogin = async (
   toast: IToast,
   router: AppRouterInstance,
+  setCookie: any,
   { email, password }: { email: string; password: string }
 ) => {
   try {
@@ -17,9 +18,8 @@ export const handleLogin = async (
     });
     const data: IResponse = response.data;
     if (data.success == true) {
-      setCookie("token", data.data.token, {
-        maxAge: 30 * 24 * 60 * 60,
-      });
+      setCookie("token", data.data.token);
+
       toast({
         variant: "success",
         title: "Login successfully",

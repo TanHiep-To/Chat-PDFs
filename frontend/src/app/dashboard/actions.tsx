@@ -1,29 +1,41 @@
 import { SERVER_API_URL } from "@/lib/config/const";
-import axios from "axios";
 import { IResponse } from "@/lib/interfaces";
+import axios from "axios";
 
-const getMessages = async (userId: string, fileId: string) => {
-  const result = await axios.get(
-    `${SERVER_API_URL}/messages?userId=${userId}&fileId=${fileId}`
-  );
-  console.log(result.data);
-  return result.data;
-};
-
-const getFile = async (userId: string, fileId: string) => {
+export const getProfile = async (token: string) => {
   try {
-    const result = await axios.get(
-      `${SERVER_API_URL}/files?userId=${userId}&fileId=${fileId}`
-    );
-    const data: IResponse = result.data;
+    const response = await axios.get(`${SERVER_API_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data: IResponse = response.data;
     if (data.success == true) {
       return data.data;
     } else {
       console.log(data.message);
     }
+    return response.data;
   } catch (error) {
     console.log(error);
   }
 };
 
-export { getMessages, getFile };
+export const getFiles = async (token: string) => {
+  try {
+    const response = await axios.get(`${SERVER_API_URL}/files`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data: IResponse = response.data;
+    if (data.success == true) {
+      return data.data;
+    } else {
+      console.log(data.message);
+    }
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -15,10 +15,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { handleLogin } from "@/app/login/actions";
-import { getCookie } from "cookies-next";
-import { redirect } from "next/navigation";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 function Copyright(props: any) {
   return (
@@ -38,7 +37,14 @@ function Copyright(props: any) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Login() {
+export default function Login({
+  cookieStore,
+  setCookie,
+}: {
+  // cookieStore: ReadonlyRequestCookies;
+  cookieStore: any;
+  setCookie: any;
+}) {
   const { toast } = useToast();
   const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -46,12 +52,14 @@ export default function Login() {
     const data = new FormData(event.currentTarget);
     const email = data.get("email") as string;
     const password = data.get("password") as string;
-    handleLogin(toast, router, { email, password });
+    handleLogin(toast, router, setCookie, { email, password });
   };
 
   useEffect(() => {
-    const token = getCookie("token");
-
+    // get token
+    const token = cookieStore[0].find(
+      (cookie: any) => cookie.name == "token"
+    ).value;
     if (token) {
       router.push("/dashboard");
     }
