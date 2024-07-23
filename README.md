@@ -1,9 +1,4 @@
-Dưới đây là nội dung đã cập nhật đầy đủ với cả Terminal 2 và Hướng dẫn đơn giản:
-
-```markdown
 # Chat-PDFs
-
-![Icon của ứng dụng](link_tới_icon)
 
 ## Giới thiệu
 
@@ -48,4 +43,3 @@ npm run dev
    - Chạy server backend trong môi trường phát triển bằng lệnh `npm run dev`.
 
 **Lưu ý:** Đảm bảo rằng PostgreSQL Server đã được cài đặt và cấu hình đúng, và có cơ sở dữ liệu có tên 'chat_pdf' trước khi chạy backend.
-```
