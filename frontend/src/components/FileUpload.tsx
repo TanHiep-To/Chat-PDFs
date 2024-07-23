@@ -23,11 +23,14 @@ const FileUpload = () => {
       <DialogTrigger asChild onClick={() => setIsOpen(true)}>
         <Button>Upload your PDF</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        className={isOpen ? "animate-fade-in " : "animate-fade-out hidden"}
+      >
         <DialogTitle>
           <VisuallyHidden>Upload your PDF</VisuallyHidden>
         </DialogTitle>
-        <UploadButton
+        {/* <UploadButton
+          className=" h-12 bg-black text-white"
           endpoint="pdfUploader"
           onClientUploadComplete={(res) => {
             // Do something with the response
@@ -38,11 +41,12 @@ const FileUpload = () => {
             // Do something with the error.
             alert(`ERROR! ${error.message}`);
           }}
-        />
+        /> */}
 
         <UploadDropzone
-          className="w-[200px] h-[200px]"
+          className="w-full h-[200px] text-white bg-gray-800"
           endpoint="pdfUploader"
+          skipPolling={true}
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
@@ -52,6 +56,12 @@ const FileUpload = () => {
             // Do something with the error.
             alert(`ERROR! ${error.message}`);
           }}
+          // onDrop={(files) => {
+          //   console.log("Files: ", files);
+          // }}
+          // onUploadBegin={() => {
+          //   console.log("Upload started");
+          // }}
         />
       </DialogContent>
     </Dialog>

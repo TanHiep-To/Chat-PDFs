@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,16 +15,20 @@ export class Message {
   @PrimaryGeneratedColumn("uuid", { name: "id" })
   id: string;
 
-  @Column("varchar", { length: 255, nullable: false, name: "content" })
+  @Column("text", { nullable: false, name: "content" })
   content: string;
 
   // @ManyToOne(() => User, (user) => user.messages)
   // user: User;
 
-  @Column("boolean", { default: true, name: "is-asked" })
+  @Column("boolean", { default: true, name: "is_asked" })
   isAsked: boolean;
 
+  @Column({ name: "file_id" })
+  fileId: string;
+
   @ManyToOne(() => File, (file) => file.messages)
+  @JoinColumn({ name: "file_id" })
   file: File;
 
   @CreateDateColumn()

@@ -2,20 +2,17 @@ import Navbar from "@/components/NavBar";
 import { cookies } from "next/headers";
 import React from "react";
 import { deleteCookie, setCookie } from "../actions";
-// import { useRouter } from "next/router";
 import { getFiles, getProfile } from "./actions";
+import { Layout, Body, Header } from "@/components/Layout";
+import { UploadDropzone } from "@/components/UploadthingUI";
+import FileUpload from "@/components/FileUpload";
 
 export default async function page() {
-  const cookieStore = cookies();
-  const token: string = (cookieStore.get("token") as unknown as string) || "";
   // const router = useRouter();
-  // if (!token) {
+  // if (!cookieStore.get("token")) {
   //   router.push("/login");
   // }
-
-  const user = await getProfile(token);
-
-  const data = await getFiles(token);
+  // const data = await getFiles(token);
   // if (!data) {
   //   router.push("/not-found");
   // }
@@ -24,13 +21,30 @@ export default async function page() {
   // const files = data.files;
 
   return (
-    <div className="flex flex-col ">
-      <Navbar
-        cookieStore={cookieStore}
-        setCookie={setCookie}
-        deleteCookie={deleteCookie}
-        user={user}
-      />
-    </div>
+    <Layout>
+      <Header sticky>
+        <Navbar
+        // cookieStore={cookieStore}
+        // setCookie={setCookie}
+        // deleteCookie={deleteCookie}
+        // user={user}
+        />
+      </Header>
+
+      <Body>
+        <div className="mb-2 flex items-center justify-between space-y-2">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+            <p className="text-muted-foreground">
+              Heres a list of your tasks for this month!
+            </p>
+          </div>
+        </div>
+        <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
+          {/* <DataTable data={files} columns={columns} /> */}
+          <FileUpload />
+        </div>
+      </Body>
+    </Layout>
   );
 }

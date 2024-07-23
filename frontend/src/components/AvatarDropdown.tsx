@@ -15,16 +15,11 @@ import {
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
 import { Avatar } from "./ui/avatar";
+import { useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 
-const UserAccountDropdown = ({
-  user,
-  deleteCookie,
-}: {
-  user: any;
-  deleteCookie: any;
-}) => {
-  const { email } = user;
-
+const UserAccountDropdown = ({}: {}) => {
+  const { user } = useContext(UserContext);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -40,9 +35,9 @@ const UserAccountDropdown = ({
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            {email && (
+            {user && user.email && (
               <p className="w-[200px] truncate text-sm text-zinc-700 dark:text-zinc-300">
-                {email}
+                {user.email}
               </p>
             )}
           </div>
@@ -62,7 +57,7 @@ const UserAccountDropdown = ({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">
-          <LogoutButton className="w-full" deleteCookie={deleteCookie} />
+          <LogoutButton className="w-full" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

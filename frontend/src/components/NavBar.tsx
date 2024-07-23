@@ -1,39 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { LogInIcon, Rocket } from "lucide-react";
+import { LogInIcon, Rocket, Sprout } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import UserAccountDropdown from "./AvatarDropdown";
 
 import WrapWidth from "@/components/ui/WrapWidth";
 
 import { buttonVariants } from "./ui/button";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Search } from "./Search";
+import { UserContext } from "@/context/UserContext";
+// import { UserContext } from "@/context/UserContext";
 
-const Navbar = async ({
-  cookieStore,
-  setCookie,
-  deleteCookie,
-  user,
-}: {
-  cookieStore: any;
-  setCookie: any;
-  deleteCookie: any;
-  user: any;
+const Navbar = ({}: // cookieStore,
+// setCookie,
+// deleteCookie,
+// user,
+{
+  // cookieStore: any;
+  // setCookie: any;
+  // deleteCookie: any;
+  // user: any;
 }) => {
   const router = useRouter();
-  const [token, setToken] = useState("");
-
+  const { user } = useContext(UserContext);
+  console.log("user", user);
+  // console.log("cookieStore", cookieStore);
   useEffect(() => {
     // get token
-    const token = cookieStore[0].find(
-      (cookie: any) => cookie.name == "token"
-    ).value;
-    if (!token) {
+    if (!user.id) {
       router.push("/login");
     }
-    setToken(token);
   });
 
   return (
@@ -44,8 +43,8 @@ const Navbar = async ({
             href="/"
             className="z-60 ml-4 flex items-center gap-1 font-semibold"
           >
-            <Rocket className="h-6 w-6" />
-            pdfwhisper.
+            <Sprout className="h-6 w-6" />
+            Chat PDF
           </Link>
 
           <div className="hidden items-center space-x-4 sm:flex">
@@ -71,8 +70,8 @@ const Navbar = async ({
               >
                 Pricing
               </Link>
-              {token ? (
-                <UserAccountDropdown user={user} deleteCookie={deleteCookie} />
+              {user ? (
+                <UserAccountDropdown />
               ) : (
                 <Link
                   href="/login"

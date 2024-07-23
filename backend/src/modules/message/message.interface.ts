@@ -12,3 +12,8 @@ export interface ICreateMessagePayload {
   fileId: string;
   isAsked?: boolean;
 }
+export interface IBotCreateMessagePayload {
+  content: string;
+  fileId: string;
+  isAsked?: boolean;
+}

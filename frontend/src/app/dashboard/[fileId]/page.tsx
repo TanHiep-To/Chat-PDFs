@@ -1,8 +1,12 @@
 import RenderPDF from "@/components/RenderPDF";
-import { useEffect, useState } from "react";
 import { getFileByFileId } from "./actions";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 import { cookies } from "next/headers";
+import ChatBox from "@/components/Chat/ChatBox";
+import { getProfile } from "../actions";
+import { redirect } from "next/navigation";
+import { Layout, Body, Header } from "@/components/Layout";
+import Navbar from "@/components/NavBar";
 // import WrapChat from "@/components/Chat/WrapChat/WrapChat";
 
 interface PageProps {
@@ -14,51 +18,53 @@ interface PageProps {
 const page = async ({ params }: PageProps) => {
   const { fileId } = params;
   const cookieStore = cookies();
-  const token: string = (cookieStore.get("token") as unknown as string) || "";
-  const router = useRouter();
-  if (!token) {
-    router.push("/login");
+  // const router = useRouter();
+  if (!cookieStore.get("token")) {
+    redirect("/login");
   }
+  const token: string = cookieStore.get("token")!.value || "";
 
   const data = await getFileByFileId(fileId, token);
   if (!data) {
-    router.push("/not-found");
+    console.log("file not found");
   }
 
   const url = data.url;
+
+  console.log("file", data.file);
+  console.log("url", url);
 
   // search for file in database with userId
   // const url =
   // "https://utfs.io/f/c0073245-a714-4654-9325-8694c523bc76-x4ydux.pdf";
 
-  // useEffect(() => {
-  //   const handleGetFile = async () => {
-  //     if (!token) {
-  //       router.push("/login");
-  //       return;
-  //     }
-  //     const res = await getFileByFileId(fileId, token);
-  //     if (!res.url) {
-  //       router.push("/not-found");
-  //     }
-  //     setUrl(url);
-  //   };
-  //   handleGetFile();
-  // });
   return (
-    <div className="flex h-[calc(100vh-112px)] flex-1 flex-col justify-between">
-      <div className="max-w-8xl mx-auto w-full grow lg:flex xl:px-2">
-        <div className="flex-1 xl:flex">
-          <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-            <RenderPDF url={url} />
+    <Layout>
+      <Header sticky>
+        {/* <Navbar
+          cookieStore={cookieStore}
+          setCookie={setCookie}
+          deleteCookie={deleteCookie}
+          user={user}
+        /> */}
+      </Header>
+
+      <Body>
+        <div className="flex h-[calc(100vh-112px)] flex-1 flex-col justify-between">
+          <div className="max-w-8xl mx-auto w-full grow lg:flex xl:px-2">
+            <div className="flex-1 xl:flex">
+              <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
+                <RenderPDF url={url} />
+              </div>
+            </div>
+
+            <div className="flex-[0.75] shrink-0 border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0">
+              <ChatBox fileId={fileId} token={token} />
+            </div>
           </div>
         </div>
-        {/* 
-        <div className="flex-[0.75] shrink-0 border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0">
-          <WrapChat fileId={file.id} />
-        </div> */}
-      </div>
-    </div>
+      </Body>
+    </Layout>
   );
 };
 

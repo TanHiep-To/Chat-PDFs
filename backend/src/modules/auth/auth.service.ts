@@ -3,13 +3,13 @@ import { AppDataSource } from "../../config/dataSource";
 import { genToken } from "../../utils/jwt";
 import { comparePassword, hashPassword } from "../../utils/password";
 import { User } from "../user/user.entity";
-import { Role } from "../user/user.interface";
+import { UserRole } from "../user/user.interface";
 
 const register = async (
   name: string,
   email: string,
   password: string,
-  role: Role = Role.USER
+  role: UserRole = UserRole.USER
 ): Promise<User> => {
   if (!email || !password) {
     throw new ApiError(400, "Email and password are required");
@@ -38,7 +38,8 @@ const login = async (email: string, password: string): Promise<string> => {
     throw new ApiError(404, "User not found");
   }
 
-  if (!comparePassword(password, user.password)) {
+  const checkPassword = await comparePassword(password, user.password);
+  if (!checkPassword) {
     throw new ApiError(400, "Invalid password");
   }
 

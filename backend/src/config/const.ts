@@ -20,5 +20,11 @@ export const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
 export const SMTP_USERNAME = process.env.SMTP_USERNAME || "user";
 export const SMTP_PASSWORD = process.env.SMTP_PASSWORD || "pass";
 
+export const UPLOADTHING_URL_HEADER = process.env.UPLOADTHING_URL_HEADER;
 export const UPLOADTHING_SECRET = process.env.UPLOADTHING_SECRET;
 export const UPLOADTHING_APP_ID = process.env.UPLOADTHING_APP_ID;
+
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+export const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+export const PINECONE_ENVIRONMENT = process.env.PINECONE_ENVIRONMENT;

@@ -1,9 +1,10 @@
+import { getProfile } from "@/app/dashboard/actions";
+import axios from "axios";
+import { cookies } from "next/headers";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
-
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -11,36 +12,69 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB" } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = await auth(req);
+      const cookieStore = cookies();
+      if (!cookieStore.get("token")) throw new UploadThingError("Unauthorized");
+
+      const token: string = cookieStore.get("token")!.value;
+      console.log("token", token);
+      const user = await getProfile(token);
 
       // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
+      return user;
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("Upload complete for userId:", metadata!.id);
 
       console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+      return { uploadedBy: metadata!.id };
     }),
 
-  pdfUploader: f({ pdf: { maxFileSize: "32MB" } })
+  pdfUploader: f({ pdf: { maxFileSize: "32MB", maxFileCount: 5 } })
     .middleware(async ({ req }) => {
-      console.log("middleware for pdfUploader");
-      const user = await auth(req);
+      const cookieStore = cookies();
+      if (!cookieStore.get("token")) throw new UploadThingError("Unauthorized");
+
+      const token: string = cookieStore.get("token")!.value;
+      console.log("token", token);
+
+      const user = await getProfile(token);
+
+      // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError("Unauthorized");
-      return { userId: user.id };
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { user, token };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("Upload complete for userId:", metadata.user.id);
       console.log("file url", file.url);
-      return { uploadedBy: metadata.userId };
+
+      const response = await axios.post(
+        "http://localhost:8000/files",
+        {
+          name: file.name,
+          key: file.key,
+          size: file.size,
+          type: "PDF",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${metadata.token}`,
+          },
+        }
+      );
+
+      const data = response.data;
+
+      console.log("data", data);
+
+      return { uploadedBy: metadata.user.id };
     }),
 } satisfies FileRouter;
 

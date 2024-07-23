@@ -75,9 +75,31 @@ const findById = async (
   }
 };
 
+const findByEmail = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { email } = req.params;
+    const user = await UserService.findByEmail(email);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      success: true,
+      data: user,
+      message: `User with email ${email} found`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const UserController = {
   create,
   findAll,
   findById,
+  findByEmail,
   me,
 };

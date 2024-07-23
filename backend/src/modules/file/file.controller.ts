@@ -9,8 +9,15 @@ const create = async (
   next: NextFunction
 ) => {
   try {
-    const { fileId } = req.body;
-    const file = await FileService.create(fileId);
+    const { user } = req.body;
+    const { name, key, size, type } = req.body;
+    const file = await FileService.create({
+      name,
+      key,
+      size,
+      type,
+      userId: user.id,
+    });
     res.status(201).json({
       success: true,
       data: file,
