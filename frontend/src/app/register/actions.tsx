@@ -4,7 +4,7 @@ import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const handleRegister = async (
-  toast: IToast,
+  toast: any,
   router: AppRouterInstance,
   {
     firstName,

@@ -19,6 +19,28 @@ const create = async (
   }
 };
 
+const botCreate = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { fileId, content } = req.body;
+    const message = await MessageService.botCreate({
+      fileId,
+      content,
+      isAsked: false,
+    });
+    res.status(201).json({
+      success: true,
+      data: message,
+      message: "Message created",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const findAll = async (
   req: Express.Request,
   res: Express.Response,
@@ -57,13 +79,13 @@ const findById = async (
   }
 };
 
-const findByUserIdAndFileId = async (
+const findByFileId = async (
   req: Express.Request,
   res: Express.Response,
   next: Express.NextFunction
 ) => {
   try {
-    const { userId, fileId } = req.params;
+    const fileId = req.query.fileId as string;
     const messages = await MessageService.findByFileId(fileId);
     res.status(200).json({
       success: true,
@@ -77,7 +99,8 @@ const findByUserIdAndFileId = async (
 
 export const MessageController = {
   create,
+  botCreate,
   findAll,
   findById,
-  findByUserIdAndFileId,
+  findByFileId,
 };

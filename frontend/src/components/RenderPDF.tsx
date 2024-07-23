@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { z } from "zod";
 import SimpleBar from "simplebar-react";
 import { useForm } from "react-hook-form";
-import "react-pdf/dist/Page/TextLayer.css";
-import "react-pdf/dist/Page/AnnotationLayer.css";
+// import "react-pdf/dist/Page/TextLayer.css";
+// import "react-pdf/dist/Page/AnnotationLayer.css";
 import { Document, Page, pdfjs } from "react-pdf";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { useResizeDetector } from "react-resize-detector";
@@ -33,12 +33,32 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
+import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+
+if (typeof Promise.withResolvers === "undefined") {
+  if (window)
+    // @ts-expect-error This does not exist outside of polyfill which this is doing
+    window.Promise.withResolvers = function () {
+      let resolve, reject;
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    };
+}
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.min.mjs",
+//   import.meta.url
+// ).toString();
 
 interface Props {
   url: string;
 }
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const RenderPDF = ({ url }: Props) => {
   const [numberPages, setNumberPages] = useState<number>();
@@ -47,6 +67,7 @@ const RenderPDF = ({ url }: Props) => {
   const [scale, setScale] = useState<number>(1);
   const [renderedScale, setRenderedScale] = useState<number | null>(null);
   const { width, ref } = useResizeDetector();
+  const router = useRouter();
 
   const isLoading = renderedScale !== null && renderedScale !== scale;
 
@@ -75,6 +96,13 @@ const RenderPDF = ({ url }: Props) => {
     setValue("index", String(index));
   };
 
+  useEffect(() => {
+    const token = getCookie("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+
   return (
     <div className="flex w-full flex-col items-center rounded-md bg-white shadow">
       <div className="flex h-14 w-full items-center justify-between border-b border-zinc-200 px-2">
@@ -91,51 +119,49 @@ const RenderPDF = ({ url }: Props) => {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="flex items-center gap-1.5">
-            <Input
-              {...register("index")}
-              className={cn(
-                "h-8 w-12",
-                errors.index && "focus-visible:ring-red-500"
+          <Input
+            {...register("index")}
+            className={cn(
+              "h-8 w-12",
+              errors.index && "focus-visible:ring-red-500"
+            )}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleSubmit(handlePageSubmit)();
+              }
+            }}
+          />
+          <p className="space-x-1 text-sm text-zinc-700">
+            <span className="text-zinc-500">/</span>
+            <span>
+              {numberPages ?? (
+                <Loader2 className="inline h-3 w-3 animate-spin" />
               )}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  handleSubmit(handlePageSubmit)();
-                }
-              }}
-            />
-            <p className="space-x-1 text-sm text-zinc-700">
-              <span className="text-zinc-500">/</span>
-              <span>
-                {numberPages ?? (
-                  <Loader2 className="inline h-3 w-3 animate-spin" />
-                )}
-              </span>
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label="next page"
-              disabled={numberPages === undefined || currPage === numberPages}
-              onClick={() => {
-                setCurrPage((prev) =>
-                  prev + 1 > numberPages! ? numberPages! : prev + 1
-                );
-                setValue("index", String(currPage + 1));
-              }}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              aria-label="rotate"
-              variant="ghost"
-              size="sm"
-              onClick={() => setRotation((prev) => prev + 90)}
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-            <PDFViewer url={url} />
-          </div>
+            </span>
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="next page"
+            disabled={numberPages === undefined || currPage === numberPages}
+            onClick={() => {
+              setCurrPage((prev) =>
+                prev + 1 > numberPages! ? numberPages! : prev + 1
+              );
+              setValue("index", String(currPage + 1));
+            }}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            aria-label="rotate"
+            variant="ghost"
+            size="sm"
+            onClick={() => setRotation((prev) => prev + 90)}
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
+          <PDFViewer url={url} />
         </div>
         <div className="space-x-2">
           <DropdownMenu>
@@ -189,7 +215,6 @@ const RenderPDF = ({ url }: Props) => {
               }}
               className="max-h-full"
             >
-              {/* To show the previous scaled page, unless the new page is rendered. */}
               {isLoading && renderedScale ? (
                 <Page
                   key={"page_scale" + currPage + renderedScale}
@@ -199,21 +224,25 @@ const RenderPDF = ({ url }: Props) => {
                   width={width ? width : 1}
                 />
               ) : null}
-              {/* The new scaled page. */}
-              <Page
-                key={"page_scale" + currPage + scale}
-                className={cn(isLoading ? "hidden" : null)}
-                pageNumber={currPage}
-                scale={scale}
-                rotate={rotation}
-                width={width ? width : 1}
-                loading={
-                  <div className="flex justify-center">
-                    <Loader2 className="my-24 h-8 w-8 animate-spin text-primary" />
-                  </div>
-                }
-                onRenderSuccess={() => setRenderedScale(scale)}
-              />
+              {Array.apply(null, Array(numberPages))
+                .map((x, i) => i + 1)
+                .map((page) => (
+                  <Page
+                    key={"page" + page}
+                    pageNumber={page}
+                    scale={scale}
+                    rotate={rotation}
+                    // width={width ? width : 1}
+                    loading={
+                      <div className="flex justify-center">
+                        <Loader2 className="my-24 h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    }
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    // customTextRenderer={false}
+                  />
+                ))}
             </Document>
           </div>
         </SimpleBar>

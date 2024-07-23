@@ -6,9 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Message } from "../message/message.entity";
-import { Role } from "./user.interface";
-import { Service } from "typedi";
+import { UserRole } from "./user.interface";
 import { File } from "../file/file.entity";
 
 @Entity("users")
@@ -45,8 +43,17 @@ export class User {
   @OneToMany(() => File, (file) => file.user)
   files: File[];
 
-  @Column("enum", { enum: Role, default: Role.USER, name: "role" })
-  role: Role;
+  @Column("enum", { enum: UserRole, default: UserRole.USER, name: "role" })
+  role: UserRole;
+
+  @Column("boolean", { default: false, name: "is_verified" })
+  is_verified: boolean;
+
+  @Column("boolean", { default: false, name: "is_banned" })
+  is_banned: boolean;
+
+  @Column("boolean", { default: false, name: "is_vip" })
+  is_vip: boolean;
 
   @CreateDateColumn()
   created_at: Date;

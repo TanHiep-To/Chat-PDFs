@@ -7,6 +7,10 @@
     "test": "jest --detectOpenHandles"
   },
   "dependencies": {
+    "@langchain/community": "^0.2.20",
+    "@langchain/openai": "^0.2.4",
+    "@langchain/pinecone": "^0.0.8",
+    "@pinecone-database/pinecone": "^3.0.0",
     "bcrypt": "^5.1.1",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.6",
@@ -15,6 +19,7 @@
     "express": "^4.19.2",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
+    "pdf-parse": "^1.1.1",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",

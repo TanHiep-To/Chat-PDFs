@@ -13,55 +13,55 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import Container from "@mui/material/Container";
 
-const backgroundImageUrl = 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-16-1.jpg';
+const backgroundImageUrl =
+  "https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-16-1.jpg";
 const customTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
     primary: {
-      main: '#29b6f6',
+      main: "#29b6f6",
     },
     secondary: {
-      main: '#ce93d8',
+      main: "#ce93d8",
     },
     background: {
       default: `url(${backgroundImageUrl}) no-repeat center center fixed`,
-      paper: '#ffffff22',
+      paper: "#ffffff22",
     },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h5: {
       fontWeight: 700,
-      color: '#ffffff',
+      color: "#ffffff",
     },
     body1: {
-      color: '#ffffff',
+      color: "#ffffff",
     },
   },
   components: {
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiInputBase-input': {
-            color: '#ffffff',
+          "& .MuiInputBase-input": {
+            color: "#ffffff",
           },
-          '& label': {
-            color: '#ffffff',
+          "& label": {
+            color: "#ffffff",
           },
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: '#29b6f6',
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#29b6f6",
             },
-            '&:hover fieldset': {
-              borderColor: '#ce93d8',
+            "&:hover fieldset": {
+              borderColor: "#ce93d8",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: '#ffffff',
-              boxShadow: '0 0 5px #29b6f6',
+            "&.Mui-focused fieldset": {
+              borderColor: "#ffffff",
+              boxShadow: "0 0 5px #29b6f6",
             },
           },
         },
@@ -70,11 +70,11 @@ const customTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '20px',
-          fontWeight: 'bold',
-          backgroundColor: '#29b6f6',
-          '&:hover': {
-            backgroundColor: '#58a5f0',
+          borderRadius: "20px",
+          fontWeight: "bold",
+          backgroundColor: "#29b6f6",
+          "&:hover": {
+            backgroundColor: "#58a5f0",
           },
         },
       },
@@ -83,9 +83,8 @@ const customTheme = createTheme({
 });
 
 export default function Register() {
-  const { toast } = useToast();
   const router = useRouter();
-  const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const firstName = data.get("firstName") as string;
@@ -97,38 +96,48 @@ export default function Register() {
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box sx={{
-        height: '100vh',
-        width: '100vw',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundImage: `url(${backgroundImageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        color: '#ffffff',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      }}>
-        
-        <Container component="main" maxWidth="sm" sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: 4,
-          borderRadius: 4,
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.75)',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          color: '#ffffff',
-          width: '100%',  // Adjust width as needed, increased for better form visibility
-        }}>
+      <Box
+        sx={{
+          height: "100vh",
+          width: "100vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          color: "#ffffff",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+        }}
+      >
+        <Container
+          component="main"
+          maxWidth="sm"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: 4,
+            borderRadius: 4,
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.75)",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            color: "#ffffff",
+            width: "100%", // Adjust width as needed, increased for better form visibility
+          }}
+        >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3, width: '100%' }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 3, width: "100%" }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -174,7 +183,9 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  control={
+                    <Checkbox value="allowExtraEmails" color="primary" />
+                  }
                   label="I want to receive inspiration, marketing promotions and updates via email."
                 />
               </Grid>

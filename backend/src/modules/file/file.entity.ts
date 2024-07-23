@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -54,7 +55,7 @@ export class File {
     length: 255,
     nullable: false,
     name: "status",
-    default: FileStatus.PENDING,
+    default: FileStatus.UPLOADED,
   })
   status: FileStatus;
 
@@ -70,7 +71,11 @@ export class File {
   })
   type: FileType;
 
+  @Column({ name: "user_id" })
+  userId: string;
+
   @ManyToOne(() => User, (user) => user.files)
+  @JoinColumn({ name: "user_id" })
   user: User;
 
   @OneToMany(() => Message, (message) => message.file)

@@ -1,28 +1,50 @@
-"use client";
-
+import Navbar from "@/components/NavBar";
+import { cookies } from "next/headers";
+import React from "react";
+import { deleteCookie, setCookie } from "../actions";
+import { getFiles, getProfile } from "./actions";
+import { Layout, Body, Header } from "@/components/Layout";
+import { UploadDropzone } from "@/components/UploadthingUI";
 import FileUpload from "@/components/FileUpload";
-import RenderPDF from "@/components/RenderPDF";
-// import FileUploadButton1 from "@/components/FileUploadButton1";
-// import { UploadButton } from "@/components/FileUploadButton1";
-import React, { useRef } from "react";
 
-export default function page() {
-  // return <div>{/* <FileUpload /> */}
-  // </div>;
+export default async function page() {
+  // const router = useRouter();
+  // if (!cookieStore.get("token")) {
+  //   router.push("/login");
+  // }
+  // const data = await getFiles(token);
+  // if (!data) {
+  //   router.push("/not-found");
+  // }
+
+  //TODO: get files
+  // const files = data.files;
 
   return (
-    <div className="flex h-[calc(100vh-112px)] flex-1 flex-col justify-between">
-      <div className="max-w-8xl mx-auto w-full grow lg:flex xl:px-2">
-        <div className="flex-1 xl:flex">
-          <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
-            {/* <RenderPDF url={file.url} /> */}
+    <Layout>
+      <Header sticky>
+        <Navbar
+        // cookieStore={cookieStore}
+        // setCookie={setCookie}
+        // deleteCookie={deleteCookie}
+        // user={user}
+        />
+      </Header>
+
+      <Body>
+        <div className="mb-2 flex items-center justify-between space-y-2">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+            <p className="text-muted-foreground">
+              Heres a list of your tasks for this month!
+            </p>
           </div>
         </div>
-
-        {/* <div className="flex-[0.75] shrink-0 border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0">
-          <WrapChat fileId={file.id} />
-        </div> */}
-      </div>
-    </div>
+        <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
+          {/* <DataTable data={files} columns={columns} /> */}
+          <FileUpload />
+        </div>
+      </Body>
+    </Layout>
   );
 }

@@ -1,7 +1,7 @@
-export enum Role {
-  ADMIN = "admin",
-  USER = "user",
-  BOT = "bot",
+export enum UserRole {
+  ADMIN = "ADMIN",
+  USER = "USER",
+  BOT = "BOT",
 }
 
 export interface IUser {
@@ -17,13 +17,5 @@ export interface IUserPayload {
   name: string;
   email: string;
   password: string;
-  role?: Role;
-}
-
-export interface IUserService {
-  create(user: IUser): Promise<IUser>;
-  findAll(): Promise<IUser[]>;
-  findOne(id: string): Promise<IUser | null>;
-  update(id: string, user: IUser): Promise<IUser | null>;
-  remove(id: string): Promise<void>;
+  role?: UserRole;
 }

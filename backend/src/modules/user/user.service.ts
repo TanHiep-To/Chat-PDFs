@@ -1,6 +1,5 @@
-import { DataSource, Entity, Repository } from "typeorm";
 import { User } from "./user.entity";
-import { IUser, IUserPayload, IUserService } from "./user.interface";
+import { IUser, IUserPayload } from "./user.interface";
 import { Inject, Service } from "typedi";
 import { AppDataSource } from "../../config/dataSource";
 import ApiError from "../../common/ApiError";
@@ -27,8 +26,17 @@ const findOne = async (id: string): Promise<IUser> => {
   return user;
 };
 
+const findByEmail = async (email: string): Promise<IUser> => {
+  const user = await AppDataSource.getRepository(User).findOneBy({ email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return user;
+};
+
 export const UserService = {
   create,
   findAll,
   findOne,
+  findByEmail,
 };

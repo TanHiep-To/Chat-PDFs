@@ -12,9 +12,10 @@ export interface IFile {
 
 export interface ICreateFilePayload {
   name: string;
-  url: string;
+  url?: string;
   key: string;
   size: number;
-  status: FileStatus;
+  status?: FileStatus;
+  userId: string;
   type: FileType;
 }

@@ -1,5 +1,3 @@
-import { Toast, ToasterToast } from "@/components/ui/use-toast";
-
 export interface IResponse {
   success: boolean;
   data?: any;
@@ -18,6 +16,13 @@ export interface AuthResult {
   message: string;
 }
 
+export interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export interface Message {
   id: string;
   text: string;
@@ -28,8 +33,22 @@ export interface Message {
   };
 }
 
-export type IToast = ({ ...props }: Toast) => {
-  id: string;
-  dismiss: () => void;
-  update: (props: ToasterToast) => void;
+export type TMessageFetched = {
+  messages: {
+    text: string;
+    id: string;
+    isAsked: boolean;
+    createdAt: Date;
+  }[];
+  nextCursor?: string | undefined;
 };
+
+export type TOriginalMessage = {
+  text: string;
+  id: string;
+  isAsked: boolean;
+  createdAt: Date;
+  nextCursor?: string | undefined;
+};
+
+export type TOmitText = Omit<TOriginalMessage, "text">;
