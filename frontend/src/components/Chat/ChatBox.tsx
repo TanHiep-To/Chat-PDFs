@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -15,13 +15,15 @@ import Messages from "./Messages";
 
 import { buttonVariants } from "@/components/ui/button";
 import { SERVER_API_URL } from "@/lib/config/const";
+import { UserContext } from "@/context/UserContext";
 
 interface Props {
   fileId: string;
   token: string;
 }
 
-const ChatBox = ({ fileId, token }: Props) => {
+const ChatBox = ({ fileId }: Props) => {
+  const { token } = useContext(UserContext);
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["get-upload-status"],
     enabled: false,
@@ -142,9 +144,8 @@ const ChatBox = ({ fileId, token }: Props) => {
     <ChatContextProvider token={token} fileId={fileId}>
       <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
         <div className="mb-28 flex flex-1 flex-col justify-between">
-          <Messages />
+          <Messages fileId={fileId} />
         </div>
-
         <ChatInput />
       </div>
     </ChatContextProvider>

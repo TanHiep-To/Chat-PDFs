@@ -3,7 +3,6 @@ import { getFileByFileId } from "./actions";
 // import { useRouter } from "next/router";
 import { cookies } from "next/headers";
 import ChatBox from "@/components/Chat/ChatBox";
-import { getProfile } from "../actions";
 import { redirect } from "next/navigation";
 import { Layout, Body, Header } from "@/components/Layout";
 import Navbar from "@/components/NavBar";
@@ -31,7 +30,6 @@ const page = async ({ params }: PageProps) => {
 
   const url = data.url;
 
-  console.log("file", data.file);
   console.log("url", url);
 
   // search for file in database with userId
@@ -41,19 +39,14 @@ const page = async ({ params }: PageProps) => {
   return (
     <Layout>
       <Header sticky>
-        {/* <Navbar
-          cookieStore={cookieStore}
-          setCookie={setCookie}
-          deleteCookie={deleteCookie}
-          user={user}
-        /> */}
+        <Navbar />
       </Header>
 
       <Body>
         <div className="flex h-[calc(100vh-112px)] flex-1 flex-col justify-between">
           <div className="max-w-8xl mx-auto w-full grow lg:flex xl:px-2">
             <div className="flex-1 xl:flex">
-              <div className="px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
+              <div className="px-4 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6">
                 <RenderPDF url={url} />
               </div>
             </div>

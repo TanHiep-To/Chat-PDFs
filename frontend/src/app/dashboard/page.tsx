@@ -1,17 +1,17 @@
 import Navbar from "@/components/NavBar";
 import { cookies } from "next/headers";
 import React from "react";
-import { deleteCookie, setCookie } from "../actions";
-import { getFiles, getProfile } from "./actions";
 import { Layout, Body, Header } from "@/components/Layout";
 import { UploadDropzone } from "@/components/UploadthingUI";
 import FileUpload from "@/components/FileUpload";
+import { redirect } from "next/navigation";
 
 export default async function page() {
   // const router = useRouter();
-  // if (!cookieStore.get("token")) {
-  //   router.push("/login");
-  // }
+  const cookieStore = cookies();
+  if (!cookieStore.get("token")) {
+    redirect("/login");
+  }
   // const data = await getFiles(token);
   // if (!data) {
   //   router.push("/not-found");

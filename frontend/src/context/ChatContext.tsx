@@ -23,7 +23,9 @@ export type TChatContext = {
   handleUserInputChange: (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
-  isLoading: boolean;
+  isThinking: boolean;
+  numOfMessages: number;
+  setNumOfMessages: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const ChatContext = createContext<TChatContext>({
@@ -31,19 +33,27 @@ export const ChatContext = createContext<TChatContext>({
   getMessages: () => {},
   addMessage: () => {},
   handleUserInputChange: () => {},
-  isLoading: false,
+  isThinking: false,
+  numOfMessages: 0,
+  setNumOfMessages: () => {},
 });
 
-export const ChatContextProvider = ({ token, fileId, children }: Props) => {
+export const ChatContextProvider = ({ children, token, fileId }: Props) => {
   const [message, setMessage] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isThinking, setIsThinking] = useState<boolean>(false);
+  const [numOfMessages, setNumOfMessages] = useState<number>(0);
   const backupMessage = useRef<string>("");
 
   const getMessages = useQuery({
     queryKey: ["getMessages"],
     queryFn: async () => {
       const response = await axios.get(
-        `${SERVER_API_URL}/messages?fileId=${fileId}`
+        `${SERVER_API_URL}/messages?fileId=${fileId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = await response.data;
       return data.data;
@@ -55,29 +65,52 @@ export const ChatContextProvider = ({ token, fileId, children }: Props) => {
 
   const { mutate: sendMessage } = useMutation({
     mutationKey: ["addMessage"],
-    mutationFn: async ({ message }: { message: string }) => {
+    mutationFn: async ({ content }: { content: string }) => {
       const payload: TAddMessageValidator = {
         fileId,
-        message,
+        content,
       };
-      const { data, status } = await axios.post(
+
+      const { data: dataUser, status: statusUser } = await axios.post(
         `${SERVER_API_URL}/messages`,
         payload,
         {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (status !== 200) {
-        return toast({
-          title: "There was a problem sending this message",
-          description: "Please refresh this page and try again",
-          variant: "destructive",
-        });
+      if (statusUser !== 200) {
+        // return toast({
+        //   title: "There was a problem sending this message",
+        //   description: "Please refresh this page and try again",
+        //   variant: "destructive",
+        // });
+        console.error("Error sending message");
+        return "Error sending message";
       }
-      return data;
+      // const { data: dataBot, status: statusBot } = await axios.post(
+      //   `${SERVER_API_URL}/messages/bot`,
+      //   payload,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      // if (statusBot !== 200) {
+      //   // return toast({
+      //   //   title: "There was a problem sending this message",
+      //   //   description: "Please refresh this page and try again",
+      //   //   variant: "destructive",
+      //   // });
+      //   console.error("Error answering message");
+      //   return "Error answering message";
+      // }
+      setNumOfMessages((prev) => prev + 1);
+      console.log("numOfMessages: ", numOfMessages);
+      return dataUser;
+      //  dataBot
     },
     onMutate: () => {
       backupMessage.current = message;
@@ -87,7 +120,7 @@ export const ChatContextProvider = ({ token, fileId, children }: Props) => {
       setMessage(backupMessage.current);
     },
     onSuccess: async (stream) => {
-      setIsLoading(false);
+      setIsThinking(false);
       if (!stream) {
         return toast({
           title: "There was a problem sending this message",
@@ -97,12 +130,12 @@ export const ChatContextProvider = ({ token, fileId, children }: Props) => {
       }
     },
     onSettled: () => {
-      setIsLoading(false);
+      setIsThinking(false);
     },
   });
 
   const addMessage = () => {
-    sendMessage({ message });
+    sendMessage({ content: message });
   };
 
   const handleUserInputChange = (
@@ -117,8 +150,10 @@ export const ChatContextProvider = ({ token, fileId, children }: Props) => {
         getMessages,
         addMessage,
         handleUserInputChange,
-        isLoading,
+        isThinking,
         message,
+        numOfMessages,
+        setNumOfMessages,
       }}
     >
       {children}

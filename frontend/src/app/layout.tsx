@@ -28,6 +28,7 @@ export default async function RootLayout({
     <html lang="en">
       <Providers>
         <UserProvider
+          token={token}
           user={user}
           setCookie={setCookie}
           deleteCookie={deleteCookie}

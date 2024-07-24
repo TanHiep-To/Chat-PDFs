@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { z } from "zod";
 import SimpleBar from "simplebar-react";
 import { useForm } from "react-hook-form";
-// import "react-pdf/dist/Page/TextLayer.css";
-// import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
 import { Document, Page, pdfjs } from "react-pdf";
-// import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useResizeDetector } from "react-resize-detector";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import {
@@ -22,8 +22,6 @@ import {
 
 import PDFViewer from "./PDFViewer";
 
-// import { toast } from "@/hooks/use-toast";
-
 import { cn } from "@/lib/utils";
 
 import { Input } from "./ui/input";
@@ -33,8 +31,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { UserContext } from "@/context/UserContext";
 
 if (typeof Promise.withResolvers === "undefined") {
   if (window)
@@ -68,6 +66,7 @@ const RenderPDF = ({ url }: Props) => {
   const [renderedScale, setRenderedScale] = useState<number | null>(null);
   const { width, ref } = useResizeDetector();
   const router = useRouter();
+  const { user, token } = useContext(UserContext);
 
   const isLoading = renderedScale !== null && renderedScale !== scale;
 
@@ -88,7 +87,7 @@ const RenderPDF = ({ url }: Props) => {
     defaultValues: {
       index: "1",
     },
-    // resolver: zodResolver(CustomPageLoadValidator),
+    resolver: zodResolver(CustomPageLoadValidator),
   });
 
   const handlePageSubmit = ({ index }: CustomPageLoadType) => {
@@ -97,7 +96,6 @@ const RenderPDF = ({ url }: Props) => {
   };
 
   useEffect(() => {
-    const token = getCookie("token");
     if (!token) {
       router.push("/login");
     }
@@ -105,7 +103,7 @@ const RenderPDF = ({ url }: Props) => {
 
   return (
     <div className="flex w-full flex-col items-center rounded-md bg-white shadow">
-      <div className="flex h-14 w-full items-center justify-between border-b border-zinc-200 px-2">
+      <div className="flex  w-full items-center justify-between border-b border-zinc-200 px-1">
         <div className="flex items-center gap-1.5">
           <Button
             variant="ghost"
@@ -177,6 +175,9 @@ const RenderPDF = ({ url }: Props) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => setScale(0.75)}>
+                75%
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setScale(1)}>
                 100%
               </DropdownMenuItem>
@@ -194,14 +195,24 @@ const RenderPDF = ({ url }: Props) => {
         </div>
       </div>
 
-      <div className="max-h-screen w-full flex-1">
-        <SimpleBar autoHide={false} className="max-h-[calc(100vh-10rem)]">
+      <div className=" w-full flex-1">
+        <SimpleBar
+          autoHide={false}
+          // className={cn(
+          //   "w-[780px] flex max-h-[calc(100vh-10rem)] overflow-x-scroll overflow-y-scroll]",
+          //   {
+          //     "justify-center": scale <= 1,
+          //     "justify-around": scale > 1,
+          //   }
+          // )}
+          className="w-[780px] flex justify-center max-h-[calc(100vh-10rem)] overflow-x-scroll overflow-y-scroll"
+        >
           <div ref={ref}>
             <Document
               file={url}
               loading={
-                <div className="flex justify-center">
-                  <Loader2 className="my-24 h-8 w-8 animate-spin text-primary" />
+                <div className=" flex justify-center">
+                  <Loader2 className=" w-8 animate-spin text-primary" />
                 </div>
               }
               onLoadSuccess={({ numPages }) => setNumberPages(numPages)}
@@ -213,17 +224,18 @@ const RenderPDF = ({ url }: Props) => {
                 //   variant: "destructive",
                 // });
               }}
-              className="max-h-full"
+              className="max-h-full w-full"
             >
-              {isLoading && renderedScale ? (
+              {/* {isLoading && renderedScale ? (
                 <Page
                   key={"page_scale" + currPage + renderedScale}
                   pageNumber={currPage}
                   scale={scale}
                   rotate={rotation}
                   width={width ? width : 1}
+                  renderTextLayer={false}
                 />
-              ) : null}
+              ) : null} */}
               {Array.apply(null, Array(numberPages))
                 .map((x, i) => i + 1)
                 .map((page) => (

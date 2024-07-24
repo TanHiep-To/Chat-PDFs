@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { TOriginalMessage } from "@/lib/interfaces";
 
 import { Icon } from "@/components/Icon";
+import { useEffect } from "react";
 
 interface Props {
   message: TOriginalMessage;
@@ -13,6 +14,9 @@ interface Props {
 }
 
 const Message = ({ message, isNextMsgSamePerson }: Props) => {
+  useEffect(() => {
+    console.log("message: ", message);
+  }, [message]);
   return (
     <div
       className={cn("flex items-end", {
@@ -44,25 +48,25 @@ const Message = ({ message, isNextMsgSamePerson }: Props) => {
       >
         <div
           className={cn("inline-block rounded-2xl px-4 py-2", {
-            "bg-primary text-white": message.isAsked,
-            "bg-gray-200 text-gray-900": !message.isAsked,
+            "bg-gray-200 text-black": message.isAsked,
+            "bg-cyan-200 text-gray-900": !message.isAsked,
           })}
         >
-          {typeof message.text === "string" ? (
+          {typeof message.content === "string" ? (
             <ReactMarkdown
               className={cn("prose", {
-                "text-zinc-50 selection:text-zinc-800": message.isAsked,
+                " selection:text-zinc-800": message.isAsked,
               })}
             >
-              {message.text}
+              {message.content}
             </ReactMarkdown>
           ) : (
-            message.text
+            message.content
           )}
           {message.id !== "loading-message" ? (
             <div
               className={cn("mt-2 w-full select-none text-right text-xs", {
-                "text-purple-300": message.isAsked,
+                "text-purple-500": message.isAsked,
                 "text-zinc-500": !message.isAsked,
               })}
             >

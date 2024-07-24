@@ -23,7 +23,7 @@ export interface IUser {
   role: string;
 }
 
-export interface Message {
+export interface IMessage {
   id: string;
   text: string;
   createdAt: string;
@@ -44,7 +44,7 @@ export type TMessageFetched = {
 };
 
 export type TOriginalMessage = {
-  text: string;
+  content: string;
   id: string;
   isAsked: boolean;
   createdAt: Date;

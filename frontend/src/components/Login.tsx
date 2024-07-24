@@ -75,7 +75,7 @@ const customTheme = createTheme({
 
 export default function Login({}: {}) {
   const router = useRouter();
-  const { user, setCookie } = useContext(UserContext);
+  const { token, user, setCookie } = useContext(UserContext);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -86,7 +86,7 @@ export default function Login({}: {}) {
 
   useEffect(() => {
     // get token
-    if (!user.id) {
+    if (!token) {
       return;
     }
     router.push("/dashboard");

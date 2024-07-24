@@ -25,12 +25,9 @@ const Navbar = ({}: // cookieStore,
   // user: any;
 }) => {
   const router = useRouter();
-  const { user } = useContext(UserContext);
-  console.log("user", user);
-  // console.log("cookieStore", cookieStore);
+  const { token, user } = useContext(UserContext);
   useEffect(() => {
-    // get token
-    if (!user.id) {
+    if (!token) {
       router.push("/login");
     }
   });

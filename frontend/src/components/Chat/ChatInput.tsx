@@ -12,15 +12,15 @@ interface Props {
 }
 
 const ChatInput = ({ isDisabled }: Props) => {
-  const { addMessage, handleUserInputChange, isLoading, message } =
+  const { addMessage, handleUserInputChange, isThinking, message } =
     useContext(ChatContext);
 
   const tareaRef = useRef<HTMLTextAreaElement>(null);
   return (
-    <div className="absolute bottom-8 left-0 w-full">
+    <div className="absolute bottom-0 left-0 w-full">
       <div className="mx-2 flex flex-row gap-3 md:mx-4 md:last:mb-2 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
         <div className="relative flex h-full flex-1 items-stretch md:flex-col">
-          <div className="relative flex w-full flex-grow flex-col p-3">
+          <div className="relative flex w-full flex-grow flex-col">
             <div className="relative">
               <Textarea
                 rows={1}
@@ -40,8 +40,8 @@ const ChatInput = ({ isDisabled }: Props) => {
                 }}
               />
               <Button
-                disabled={isDisabled || isLoading}
-                className="absolute bottom-1.5 right-[8px]"
+                disabled={isDisabled || isThinking}
+                className="absolute bottom-3 right-[8px]"
                 onClick={(event) => {
                   event.preventDefault();
                   addMessage();
@@ -56,19 +56,9 @@ const ChatInput = ({ isDisabled }: Props) => {
           </div>
         </div>
       </div>
-      <div className="mx-auto flex max-w-fit items-center justify-center overflow-hidden rounded-full border-2 border-gray-200 bg-white px-5 shadow-md backdrop-blur transition-all hover:border-2 hover:border-gray-200 hover:bg-white/80">
-        <p className="text-sm font-semibold text-gray-700">
-          Made with ❤️ by{" "}
-          <a
-            href="https://github.com/shricodev"
-            className="text-semibold text-primary"
-            target="_blank"
-            rel="noopener"
-          >
-            @shricodev
-          </a>
-        </p>
-      </div>
+      {/* <div className="mx-auto flex max-w-fit items-center justify-center overflow-hidden rounded-full border-2 border-gray-200 bg-white px-5 shadow-md backdrop-blur transition-all hover:border-2 hover:border-gray-200 hover:bg-white/80">
+        {" "}
+      </div> */}
     </div>
   );
 };

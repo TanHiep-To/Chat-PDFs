@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -9,57 +9,81 @@ import { ChatContext } from "@/context/ChatContext";
 
 import Message from "./Message";
 
-import { INFINITE_QUERY_LIMIT } from "@/lib/config/const";
+import { INFINITE_QUERY_LIMIT, SERVER_API_URL } from "@/lib/config/const";
 
 import { TGetMessageValidator } from "@/lib/validators/message";
 
 import { TMessageFetched } from "@/lib/interfaces";
+import { UserContext } from "@/context/UserContext";
 
 interface Props {
   fileId: string;
 }
 
-const Messages = () => {
-  const { isLoading, getMessages } = useContext(ChatContext);
+const Messages = ({ fileId }: { fileId: string }) => {
+  const { token } = useContext(UserContext);
+  const { isThinking, getMessages, numOfMessages } = useContext(ChatContext);
+  const [messages, setMessages] = useState([]);
   // const { data, fetchNextPage, isLoading } = useInfiniteQuery({
-  //   queryKey: ["get-messages"],
+  //   queryKey: ["getMessages"],
   //   queryFn: async ({ pageParam = 0 }) => {
   //     const payload: TGetMessageValidator = {
   //       fileId,
   //       limit: INFINITE_QUERY_LIMIT,
   //     };
-  //     const { data, status } = await axios.get(`/api/get-messages`, {
-  //       params: payload,
-  //     });
+  //     const { data, status } = await axios.get(
+  //       `${SERVER_API_URL}/message?fileId=${fileId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
   //     if (status !== 200) throw new Error("Error getting messages");
   //     return data as TMessageFetched;
   //   },
-  //   getNextPageParam: (lastPage, allPages) => lastPage.nextCursor,
-  //   getPreviousPageParam: (firstPage, allPages) => firstPage.prevCursor,
+  //   getNextPageParam: (lastPage, pages) => lastPage?.nextCursor,
   //   keepPreviousData: true,
   // });
 
-  // useEffect(() => {
-  //   fetchNextPage();
-  // }, [fetchNextPage]);
+  useEffect(() => {
+    // fetchNextPage();
+    // }, [fetchNextPage]);
+    const initMessages = async () => {
+      const response = await axios.get(
+        `${SERVER_API_URL}/messages?fileId=${fileId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.data;
+      console.log("messages: ", data.data);
+      setMessages(data.data);
+      return data.data;
+    };
+    // getMessages.mutate(initMessages);
+    initMessages();
+  }, [numOfMessages]);
 
   const loadingMessage = {
     id: "loading-message",
-    text: (
-      <span className="flex h-full items-center justify-center">
-        Loading...
-        <Loader2 className="ml-1.5 h-3 w-3 animate-spin text-primary" />
-      </span>
-    ),
-    isUserMessage: false,
+    // content: (
+    //   <span className="flex h-full items-center justify-center">
+    //     Loading...
+    //     <Loader2 className="ml-1.5 h-3 w-3 animate-spin text-primary" />
+    //   </span>
+    // ),
+    content: "Loading...",
+    isAsked: false,
     createdAt: new Date(),
   };
 
   // const messages = data?.pages.flatMap((page) => page.messages);
-  const messages = getMessages.data;
-  console.log("messages: ", messages);
+  // const messages = getMessages.data;
   const combinedMessages = [
-    ...(isLoading ? [loadingMessage] : []),
+    ...(isThinking ? [loadingMessage] : []),
     ...(messages ?? []),
   ];
 
@@ -68,8 +92,8 @@ const Messages = () => {
       {combinedMessages && combinedMessages.length > 0 ? (
         combinedMessages.map((message, index) => {
           const isNextMessageSamePerson =
-            combinedMessages[index - 1]?.isUserMessage ===
-            combinedMessages[index]?.isUserMessage;
+            combinedMessages[index - 1]?.isAsked ===
+            combinedMessages[index]?.isAsked;
 
           if (index === combinedMessages.length - 1) {
             return (
@@ -89,7 +113,7 @@ const Messages = () => {
             );
           }
         })
-      ) : isLoading ? (
+      ) : isThinking ? (
         <div className="flex w-full flex-col gap-2">
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
@@ -101,12 +125,7 @@ const Messages = () => {
           <MessageCircle className="h-10 w-10 text-primary" />
           <h3 className="text-xl font-semibold">You&apos;re all set!</h3>
           <p className="text-sm text-zinc-500">
-            Ask your first question to the PDFwhisper bot.
-          </p>
-          <p className="mt-10 font-semibold">🔴 Message to Hanko Reviewers:</p>
-          <p className="max-w-2xl text-center text-sm text-zinc-500">
-            Running low on time, couldn&apos;t add optimistic chat update.
-            Please refresh the page to view the message.
+            Ask your first question to the Chat-PDF bot.
           </p>
         </div>
       )}
