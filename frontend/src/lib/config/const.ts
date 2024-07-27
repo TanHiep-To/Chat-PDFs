@@ -19,3 +19,34 @@ export const DROPDOWN_ACCEPTED_FILE_TYPES = [
   //   ["image/*"]: ".jpeg, .jpg, .png",
   // },
 ];
+
+export enum UploadStatus {
+  UPLOADED = "UPLOADED",
+  SUCCESS = "SUCCESS",
+  PENDING = "PENDING",
+  FAILURE = "FAILURE",
+  PROCESSING = "PROCESSING",
+}
+
+export const UploadStatuses = [
+  {
+    value: UploadStatus.UPLOADED,
+    label: "Uploaded",
+  },
+  {
+    value: UploadStatus.SUCCESS,
+    label: "Success",
+  },
+  {
+    value: UploadStatus.PENDING,
+    label: "Pending",
+  },
+  {
+    value: UploadStatus.FAILURE,
+    label: "Failure",
+  },
+  {
+    value: UploadStatus.PROCESSING,
+    label: "Processing",
+  },
+];

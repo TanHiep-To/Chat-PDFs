@@ -30,39 +30,11 @@ const botCreate = async (message: IBotCreateMessagePayload) => {
   const pineconeIndex = pinecone.Index(PINECONE_INDEX_NAME!);
   const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex,
+    namespace: message.fileId,
   });
   const results = await vectorStore.similaritySearch(message.content, 4);
   const prevMessages = await findByFileId(message.fileId, 5);
 
-  // const context = getContext(message.content, prevMessages, results);
-  // const openaiResponse = await openai.chat.completions.create(context);
-  // const openaiResponse = await openai.chat.completions.create({
-  //   model: "gpt-4",
-  //   // stream: true,
-  //   temperature: 0,
-  //   messages: [
-  //     {
-  //       role: "system",
-  //       content:
-  //         "Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format.",
-  //     },
-  //     {
-  //       role: "user",
-  //       content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer.
-  //   \n----------------\n
-  //   PREVIOUS CONVERSATION:
-  //   ${formattedPrevMessages.map((prevMessage) => {
-  //     if (prevMessage.role === UserRole.USER)
-  //       return `${UserRole.USER}: ${prevMessage.content}\n`;
-  //     return `${UserRole.BOT}: ${prevMessage.content}\n`;
-  //   })}
-  //   \n----------------\n
-  //   CONTEXT:
-  //   ${results.map((r) => r.pageContent).join("\n\n")}
-  //   USER INPUT: ${message.content}`,
-  //     },
-  //   ],
-  // });
   const openaiResponse = await getResponse(
     message.content,
     prevMessages,

@@ -5,6 +5,9 @@ import { Layout, Body, Header } from "@/components/Layout";
 import { UploadDropzone } from "@/components/UploadthingUI";
 import FileUpload from "@/components/FileUpload";
 import { redirect } from "next/navigation";
+import { DataTable } from "@/components/Library/DataTable";
+import { getFiles } from "./actions";
+import { columns } from "@/components/Library/Columns";
 
 export default async function page() {
   // const router = useRouter();
@@ -12,23 +15,17 @@ export default async function page() {
   if (!cookieStore.get("token")) {
     redirect("/login");
   }
-  // const data = await getFiles(token);
-  // if (!data) {
-  //   router.push("/not-found");
-  // }
-
-  //TODO: get files
-  // const files = data.files;
+  const token = cookieStore.get("token")!.value || "";
+  const files = await getFiles(token);
+  // console.log("data: ", files);
+  if (!files || files.success === false) {
+    console.log("files not found");
+  }
 
   return (
     <Layout>
       <Header sticky>
-        <Navbar
-        // cookieStore={cookieStore}
-        // setCookie={setCookie}
-        // deleteCookie={deleteCookie}
-        // user={user}
-        />
+        <Navbar />
       </Header>
 
       <Body>
@@ -36,13 +33,12 @@ export default async function page() {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
             <p className="text-muted-foreground">
-              Heres a list of your tasks for this month!
+              Heres a list of your documents for you!
             </p>
           </div>
         </div>
         <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-          {/* <DataTable data={files} columns={columns} /> */}
-          <FileUpload />
+          <DataTable data={files} columns={columns} />
         </div>
       </Body>
     </Layout>

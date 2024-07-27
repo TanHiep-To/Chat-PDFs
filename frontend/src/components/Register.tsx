@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,6 +15,8 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import Container from "@mui/material/Container";
+import { handleRegister } from "@/app/register/actions";
+import { UserContext } from "@/context/UserContext";
 
 const backgroundImageUrl =
   "https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-16-1.jpg";
@@ -83,7 +85,6 @@ const customTheme = createTheme({
 });
 
 export default function Register() {
-  const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -91,6 +92,7 @@ export default function Register() {
     const lastName = data.get("lastName") as string;
     const email = data.get("email") as string;
     const password = data.get("password") as string;
+    handleRegister({ firstName, lastName, email, password });
   };
 
   return (

@@ -23,7 +23,7 @@ export const getProfile = async (token: string) => {
 
 export const getFiles = async (token: string) => {
   try {
-    const response = await axios.get(`${SERVER_API_URL}/files`, {
+    const response = await axios.get(`${SERVER_API_URL}/files/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

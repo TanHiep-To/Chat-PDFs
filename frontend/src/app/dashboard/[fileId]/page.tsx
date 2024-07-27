@@ -1,12 +1,10 @@
 import RenderPDF from "@/components/RenderPDF";
 import { getFileByFileId } from "./actions";
-// import { useRouter } from "next/router";
 import { cookies } from "next/headers";
 import ChatBox from "@/components/Chat/ChatBox";
 import { redirect } from "next/navigation";
 import { Layout, Body, Header } from "@/components/Layout";
 import Navbar from "@/components/NavBar";
-// import WrapChat from "@/components/Chat/WrapChat/WrapChat";
 
 interface PageProps {
   params: {
@@ -17,24 +15,18 @@ interface PageProps {
 const page = async ({ params }: PageProps) => {
   const { fileId } = params;
   const cookieStore = cookies();
-  // const router = useRouter();
   if (!cookieStore.get("token")) {
     redirect("/login");
   }
   const token: string = cookieStore.get("token")!.value || "";
 
   const data = await getFileByFileId(fileId, token);
-  if (!data) {
+  if (!data || data.success === false) {
     console.log("file not found");
+    redirect("/not-found");
   }
 
   const url = data.url;
-
-  console.log("url", url);
-
-  // search for file in database with userId
-  // const url =
-  // "https://utfs.io/f/c0073245-a714-4654-9325-8694c523bc76-x4ydux.pdf";
 
   return (
     <Layout>

@@ -14,9 +14,6 @@ interface Props {
 }
 
 const Message = ({ message, isNextMsgSamePerson }: Props) => {
-  useEffect(() => {
-    console.log("message: ", message);
-  }, [message]);
   return (
     <div
       className={cn("flex items-end", {

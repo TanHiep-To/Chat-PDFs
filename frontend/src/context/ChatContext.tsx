@@ -1,14 +1,20 @@
 "use client";
 
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 import axios from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 
 import { toast } from "@/hooks/use-toast";
 
 import { TAddMessageValidator } from "@/lib/validators/message";
 import { SERVER_API_URL } from "@/lib/config/const";
+import { TMessageFetched } from "@/lib/interfaces";
 
 interface Props {
   token: string;
@@ -18,36 +24,39 @@ interface Props {
 
 export type TChatContext = {
   message: string;
-  getMessages: any;
+  messagesFetched: InfiniteData<TMessageFetched, unknown> | undefined;
+  fetchNextPage: () => void;
   addMessage: () => void;
   handleUserInputChange: (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
   isThinking: boolean;
-  numOfMessages: number;
-  setNumOfMessages: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const ChatContext = createContext<TChatContext>({
   message: "",
-  getMessages: () => {},
-  addMessage: () => {},
+  messagesFetched: undefined,
+  fetchNextPage: async () => {},
+  addMessage: async () => {},
   handleUserInputChange: () => {},
   isThinking: false,
-  numOfMessages: 0,
-  setNumOfMessages: () => {},
 });
 
 export const ChatContextProvider = ({ children, token, fileId }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [isThinking, setIsThinking] = useState<boolean>(false);
-  const [numOfMessages, setNumOfMessages] = useState<number>(0);
+  const [messagesFetched, setMessagesFetched] = useState<
+    InfiniteData<TMessageFetched, unknown>
+  >({
+    pages: [],
+    pageParams: [],
+  });
   const backupMessage = useRef<string>("");
 
-  const getMessages = useQuery({
+  const { data, fetchNextPage, refetch } = useInfiniteQuery<TMessageFetched>({
     queryKey: ["getMessages"],
-    queryFn: async () => {
-      const response = await axios.get(
+    queryFn: async ({ pageParam = 0 }) => {
+      const { data } = await axios.get(
         `${SERVER_API_URL}/messages?fileId=${fileId}`,
         {
           headers: {
@@ -55,13 +64,13 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
           },
         }
       );
-      const data = await response.data;
-      return data.data;
+      if (data.success === false) throw new Error("Error getting messages");
+      const messages = data.data;
+      return { messages, nextCursor: data.nextCursor } as TMessageFetched;
     },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
   });
-
-  if (getMessages.isLoading) return <h1>Loading....</h1>;
-  if (getMessages.isError) return <h1>Error loading data!!!</h1>;
 
   const { mutate: sendMessage } = useMutation({
     mutationKey: ["addMessage"],
@@ -71,7 +80,7 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
         content,
       };
 
-      const { data: dataUser, status: statusUser } = await axios.post(
+      const { data: dataUser } = await axios.post(
         `${SERVER_API_URL}/messages`,
         payload,
         {
@@ -80,7 +89,7 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
           },
         }
       );
-      if (statusUser !== 200) {
+      if (dataUser.success === false) {
         // return toast({
         //   title: "There was a problem sending this message",
         //   description: "Please refresh this page and try again",
@@ -89,28 +98,42 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
         console.error("Error sending message");
         return "Error sending message";
       }
-      // const { data: dataBot, status: statusBot } = await axios.post(
-      //   `${SERVER_API_URL}/messages/bot`,
-      //   payload,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   }
-      // );
-      // if (statusBot !== 200) {
-      //   // return toast({
-      //   //   title: "There was a problem sending this message",
-      //   //   description: "Please refresh this page and try again",
-      //   //   variant: "destructive",
-      //   // });
-      //   console.error("Error answering message");
-      //   return "Error answering message";
-      // }
-      setNumOfMessages((prev) => prev + 1);
-      console.log("numOfMessages: ", numOfMessages);
+      await refetch();
+
+      console.log("refetching1");
+      const { data: dataBot } = await axios.post(
+        `${SERVER_API_URL}/messages/bot`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (dataBot.success === false) {
+        // return toast({
+        //   title: "There was a problem sending this message",
+        //   description: "Please refresh this page and try again",
+        //   variant: "destructive",
+        // });
+        console.error("Error answering message");
+        return "Error answering message";
+      }
+      if (!dataUser.data) {
+        // return toast({
+        //   title: "There was a problem sending this message",
+        //   description: "Please refresh this page and try again",
+        //   variant: "destructive",
+        // });
+        console.error("Error sending message");
+        return "Error sending message";
+      }
+
+      await refetch();
+      console.log("refetching2");
+
+      console.log("messagesFetched11: ", messagesFetched.pages);
       return dataUser;
-      //  dataBot
     },
     onMutate: () => {
       backupMessage.current = message;
@@ -121,6 +144,7 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
     },
     onSuccess: async (stream) => {
       setIsThinking(false);
+
       if (!stream) {
         return toast({
           title: "There was a problem sending this message",
@@ -134,8 +158,15 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
     },
   });
 
-  const addMessage = () => {
+  useEffect(() => {
+    if (data) {
+      setMessagesFetched(data);
+    }
+  }, [data]);
+
+  const addMessage = async () => {
     sendMessage({ content: message });
+    await refetch();
   };
 
   const handleUserInputChange = (
@@ -147,13 +178,12 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
   return (
     <ChatContext.Provider
       value={{
-        getMessages,
+        messagesFetched,
+        fetchNextPage,
         addMessage,
         handleUserInputChange,
         isThinking,
         message,
-        numOfMessages,
-        setNumOfMessages,
       }}
     >
       {children}

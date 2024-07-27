@@ -35,10 +35,13 @@ export interface IMessage {
 
 export type TMessageFetched = {
   messages: {
-    text: string;
+    content: string;
     id: string;
     isAsked: boolean;
+    fileId: string;
+
     createdAt: Date;
+    updatedAt: Date;
   }[];
   nextCursor?: string | undefined;
 };

@@ -2,7 +2,7 @@
 
 import { useContext, useEffect } from "react";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChevronLeft, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -14,8 +14,10 @@ import { ChatContextProvider } from "@/context/ChatContext";
 import Messages from "./Messages";
 
 import { buttonVariants } from "@/components/ui/button";
-import { SERVER_API_URL } from "@/lib/config/const";
+import { INFINITE_QUERY_LIMIT, SERVER_API_URL } from "@/lib/config/const";
 import { UserContext } from "@/context/UserContext";
+import { TMessageFetched } from "@/lib/interfaces";
+import { TGetMessageValidator } from "@/lib/validators/message";
 
 interface Props {
   fileId: string;
@@ -24,7 +26,11 @@ interface Props {
 
 const ChatBox = ({ fileId }: Props) => {
   const { token } = useContext(UserContext);
-  const { data, isLoading, refetch } = useQuery({
+  const {
+    data: file,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["get-upload-status"],
     enabled: false,
     queryFn: async () => {
@@ -41,15 +47,10 @@ const ChatBox = ({ fileId }: Props) => {
       type UploadStatus = "SUCCESS" | "PENDING" | "FAILURE" | "PROCESSING";
       return data.data.status as UploadStatus;
     },
-    // refetchInterval: (dataStatus) =>
-    //   dataStatus && (dataStatus === "SUCCESS" || dataStatus === "FAILURE")
-    //     ? false
-    //     : 500,
   });
 
   useEffect(() => {
     refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (process.env.NODE_ENV === "production") {
@@ -93,7 +94,7 @@ const ChatBox = ({ fileId }: Props) => {
     );
   }
 
-  if (data === "PROCESSING") {
+  if (file === "PROCESSING") {
     return (
       <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
         <div className="mb-28 flex flex-1 flex-col items-center justify-center">
@@ -111,7 +112,7 @@ const ChatBox = ({ fileId }: Props) => {
     );
   }
 
-  if (data === "FAILURE") {
+  if (file === "FAILURE") {
     return (
       <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
         <div className="mb-28 flex flex-1 flex-col items-center justify-center">
@@ -144,7 +145,7 @@ const ChatBox = ({ fileId }: Props) => {
     <ChatContextProvider token={token} fileId={fileId}>
       <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
         <div className="mb-28 flex flex-1 flex-col justify-between">
-          <Messages fileId={fileId} />
+          <Messages />
         </div>
         <ChatInput />
       </div>

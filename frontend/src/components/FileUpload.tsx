@@ -8,7 +8,9 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { UploadButton, UploadDropzone } from "./UploadthingUI";
 
-const FileUpload = () => {
+const FileUpload = (
+  { refetch }: { refetch: () => void } = { refetch: () => {} }
+) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
@@ -29,28 +31,14 @@ const FileUpload = () => {
         <DialogTitle>
           <VisuallyHidden>Upload your PDF</VisuallyHidden>
         </DialogTitle>
-        {/* <UploadButton
-          className=" h-12 bg-black text-white"
-          endpoint="pdfUploader"
-          onClientUploadComplete={(res) => {
-            // Do something with the response
-            console.log("Files: ", res);
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        /> */}
-
         <UploadDropzone
           className="w-full h-[200px] text-white bg-gray-800"
           endpoint="pdfUploader"
-          skipPolling={true}
+          skipPolling={false}
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
-            alert("Upload Completed");
+            window.location.reload();
           }}
           onUploadError={(error: Error) => {
             // Do something with the error.

@@ -14,7 +14,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { handleLogin } from "@/app/login/actions";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 
 const backgroundImageUrl =
@@ -74,14 +74,13 @@ const customTheme = createTheme({
 });
 
 export default function Login({}: {}) {
-  const router = useRouter();
   const { token, user, setCookie } = useContext(UserContext);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email") as string;
     const password = data.get("password") as string;
-    handleLogin(router, setCookie, { email, password });
+    handleLogin(setCookie, { email, password });
   };
 
   useEffect(() => {
@@ -89,8 +88,8 @@ export default function Login({}: {}) {
     if (!token) {
       return;
     }
-    router.push("/dashboard");
-  });
+    redirect("/dashboard");
+  }, []);
   return (
     <ThemeProvider theme={customTheme}>
       <Grid

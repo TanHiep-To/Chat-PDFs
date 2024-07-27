@@ -1,18 +1,20 @@
 import { SERVER_API_URL } from "@/lib/config/const";
-import { IResponse, IToast } from "@/lib/interfaces";
+import { IResponse } from "@/lib/interfaces";
 import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { redirect } from "next/navigation";
 
-export const handleRegister = async (
-  toast: any,
-  router: AppRouterInstance,
-  {
-    firstName,
-    lastName,
-    email,
-    password,
-  }: { firstName: string; lastName: string; email: string; password: string }
-) => {
+export const handleRegister = async ({
+  firstName,
+  lastName,
+  email,
+  password,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}) => {
   try {
     const name = `${firstName} ${lastName}`;
     const response = await axios.post(`${SERVER_API_URL}/auth/register`, {
@@ -22,18 +24,10 @@ export const handleRegister = async (
     });
     const data: IResponse = response.data;
     if (data.success == true) {
-      toast({
-        variant: "success",
-        title: "Register successfully",
-        description: data.message,
-      });
-      router.push("/login");
+      console.log("Registered Successfully");
+      redirect("/login");
     } else {
-      toast({
-        variant: "destructive",
-        title: "Register failed",
-        description: data.message,
-      });
+      console.log("Error: ", data.message);
     }
   } catch (error) {
     console.log(error);

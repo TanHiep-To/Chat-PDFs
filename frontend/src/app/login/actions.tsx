@@ -2,9 +2,9 @@ import { SERVER_API_URL } from "@/lib/config/const";
 import { IResponse } from "@/lib/interfaces";
 import axios from "axios";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { redirect } from "next/navigation";
 
 export const handleLogin = async (
-  router: AppRouterInstance,
   setCookie: any,
   { email, password }: { email: string; password: string }
 ) => {
@@ -17,7 +17,7 @@ export const handleLogin = async (
     if (data.success == true) {
       setCookie("token", data.data.token);
       console.log("login success");
-      router.push("/dashboard");
+      redirect("/dashboard");
     } else {
       console.log("login failed");
     }

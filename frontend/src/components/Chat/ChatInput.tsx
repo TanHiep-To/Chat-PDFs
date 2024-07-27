@@ -9,11 +9,20 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
   isDisabled?: boolean;
+  // fetchNextPage?: any;
 }
 
-const ChatInput = ({ isDisabled }: Props) => {
-  const { addMessage, handleUserInputChange, isThinking, message } =
-    useContext(ChatContext);
+const ChatInput = ({
+  isDisabled,
+}: // fetchNextPage = null
+Props) => {
+  const {
+    addMessage,
+    handleUserInputChange,
+    isThinking,
+    message,
+    // fetchNextPage,
+  } = useContext(ChatContext);
 
   const tareaRef = useRef<HTMLTextAreaElement>(null);
   return (
@@ -35,6 +44,7 @@ const ChatInput = ({ isDisabled }: Props) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     addMessage();
+                    // fetchNextPage && fetchNextPage();
                     tareaRef.current?.focus();
                   }
                 }}
@@ -45,6 +55,7 @@ const ChatInput = ({ isDisabled }: Props) => {
                 onClick={(event) => {
                   event.preventDefault();
                   addMessage();
+                  // fetchNextPage && fetchNextPage();
                   tareaRef.current?.focus();
                 }}
                 aria-label="Send message"

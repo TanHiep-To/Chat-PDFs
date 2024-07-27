@@ -13,6 +13,8 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 // import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 import { pinecone } from "../../config/pinecone";
+import { Message } from "../message/message.entity";
+import { In } from "typeorm";
 
 const create = async (file: ICreateFilePayload): Promise<File> => {
   const newFile = await AppDataSource.getRepository(File).save({
@@ -34,15 +36,16 @@ const create = async (file: ICreateFilePayload): Promise<File> => {
 
   await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
     pineconeIndex,
-    // ! The namespace feature is not supported for the free tier of Pinecone.
-    // namespace: createdFile.id,
+    namespace: newFile.id,
   });
 
   return newFile;
 };
 
 const findAll = async (): Promise<File[]> => {
-  return AppDataSource.getRepository(File).find();
+  return AppDataSource.getRepository(File).find({
+    select: ["id", "name", "status", "url", "createdAt", "size", "type"],
+  });
 };
 
 const findOne = async (id: string): Promise<File> => {
@@ -66,9 +69,50 @@ const findByUserId = async (userId: string): Promise<File[]> => {
   });
 };
 
+const deleteOne = async (id: string): Promise<void> => {
+  const file = await AppDataSource.getRepository(File).findOneBy({ id });
+  if (!file) {
+    throw new ApiError(404, `File with id ${id} not found`);
+  }
+  const messages = await AppDataSource.getRepository(Message).find({
+    relations: {
+      file: true,
+    },
+    where: {
+      file: {
+        id,
+      },
+    },
+  });
+  if (messages.length > 0)
+    await AppDataSource.getRepository(Message).delete(
+      messages.map((m) => m.id)
+    );
+
+  // const pineconeIndex = pinecone.Index(PINECONE_INDEX_NAME!);
+  // const ns = pineconeIndex.namespace(file.id);
+  // await ns.delete();
+  // await pineconeIndex.namespace(id).deleteAll();
+  await AppDataSource.getRepository(File).delete({ id });
+};
+
+const deleteMany = async (ids: string[]): Promise<void> => {
+  const files = await AppDataSource.getRepository(File).find({
+    where: {
+      id: In(ids),
+    },
+  });
+
+  files.forEach(async (file) => {
+    await deleteOne(file.id);
+  });
+};
+
 export const FileService = {
   create,
   findAll,
   findOne,
   findByUserId,
+  deleteOne,
+  deleteMany,
 };

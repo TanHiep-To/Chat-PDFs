@@ -1,6 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+"useclient";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useContext } from "react";
+
 import axios from "axios";
 import { Loader2, MessageCircle } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
@@ -9,63 +10,8 @@ import { ChatContext } from "@/context/ChatContext";
 
 import Message from "./Message";
 
-import { INFINITE_QUERY_LIMIT, SERVER_API_URL } from "@/lib/config/const";
-
-import { TGetMessageValidator } from "@/lib/validators/message";
-
-import { TMessageFetched } from "@/lib/interfaces";
-import { UserContext } from "@/context/UserContext";
-
-interface Props {
-  fileId: string;
-}
-
-const Messages = ({ fileId }: { fileId: string }) => {
-  const { token } = useContext(UserContext);
-  const { isThinking, getMessages, numOfMessages } = useContext(ChatContext);
-  const [messages, setMessages] = useState([]);
-  // const { data, fetchNextPage, isLoading } = useInfiniteQuery({
-  //   queryKey: ["getMessages"],
-  //   queryFn: async ({ pageParam = 0 }) => {
-  //     const payload: TGetMessageValidator = {
-  //       fileId,
-  //       limit: INFINITE_QUERY_LIMIT,
-  //     };
-  //     const { data, status } = await axios.get(
-  //       `${SERVER_API_URL}/message?fileId=${fileId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     if (status !== 200) throw new Error("Error getting messages");
-  //     return data as TMessageFetched;
-  //   },
-  //   getNextPageParam: (lastPage, pages) => lastPage?.nextCursor,
-  //   keepPreviousData: true,
-  // });
-
-  useEffect(() => {
-    // fetchNextPage();
-    // }, [fetchNextPage]);
-    const initMessages = async () => {
-      const response = await axios.get(
-        `${SERVER_API_URL}/messages?fileId=${fileId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.data;
-      console.log("messages: ", data.data);
-      setMessages(data.data);
-      return data.data;
-    };
-    // getMessages.mutate(initMessages);
-    initMessages();
-  }, [numOfMessages]);
+const Messages = () => {
+  const { isThinking, messagesFetched } = useContext(ChatContext);
 
   const loadingMessage = {
     id: "loading-message",
@@ -80,8 +26,8 @@ const Messages = ({ fileId }: { fileId: string }) => {
     createdAt: new Date(),
   };
 
-  // const messages = data?.pages.flatMap((page) => page.messages);
-  // const messages = getMessages.data;
+  const messages =
+    messagesFetched?.pages.flatMap((page) => page.messages) || [];
   const combinedMessages = [
     ...(isThinking ? [loadingMessage] : []),
     ...(messages ?? []),
