@@ -54,6 +54,11 @@ const UserAccountDropdown = ({}: {}) => {
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/pricing">Pricing</Link>
         </DropdownMenuItem>
+        {user && user.role === "ADMIN" ? (
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href="/admin">Admin</Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">

@@ -35,7 +35,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     responseStatus: statusCodeText.toUpperCase().split(" ").join("_"),
     stack: NODE_ENV === "development" ? error.stack : undefined,
   });
-  next();
+  // next();
 };
 
 export default globalErrorHandler;

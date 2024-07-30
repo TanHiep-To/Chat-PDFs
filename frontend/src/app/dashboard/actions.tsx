@@ -9,7 +9,6 @@ export const getProfile = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("check");
     const data: IResponse = response.data;
     if (data.success == true) {
       return data.data;

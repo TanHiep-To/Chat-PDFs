@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getProfile } from "./dashboard/actions";
 import { deleteCookie, setCookie } from "./actions";
 import { IUser } from "@/lib/interfaces";
+import { Toaster } from "@/components/ui/toaster";
 
 // const UserProvider = React.lazy(() => import("@/context/UserContext"));
 // const UserContext = React.lazy(() => import("@/context/UserContext"));
@@ -24,17 +25,21 @@ export default async function RootLayout({
   } else {
     user = {};
   }
+
   return (
     <html lang="en">
       <Providers>
-        <UserProvider
-          token={token}
-          user={user}
-          setCookie={setCookie}
-          deleteCookie={deleteCookie}
-        >
-          <body>{children}</body>
-        </UserProvider>
+        <body>
+          <Toaster />
+          <UserProvider
+            token={token}
+            user={user}
+            setCookie={setCookie}
+            deleteCookie={deleteCookie}
+          >
+            <main>{children}</main>
+          </UserProvider>
+        </body>
         {/* <UserContext.Provider value={{ cookieStore }}>
           <body>{children}</body>
         </UserContext.Provider> */}

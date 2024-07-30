@@ -2,7 +2,11 @@ import * as Express from "express";
 import { AuthService } from "./auth.service";
 import { getErrorMessage } from "../../common/error";
 
-const register = async (req: Express.Request, res: Express.Response) => {
+const register = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
   try {
     const { name, email, password } = req.body;
     const user = await AuthService.register(name, email, password);
@@ -12,7 +16,7 @@ const register = async (req: Express.Request, res: Express.Response) => {
       message: `User ${user.email} created`,
     });
   } catch (error) {
-    res.status(400).json({ message: getErrorMessage(error) });
+    next(error);
   }
 };
 
@@ -27,7 +31,25 @@ const login = async (
     res.status(200).json({
       success: true,
       data: { token },
-      message: "Login successful",
+      message: "Login successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const otp = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { otp } = req.body;
+    const result = await AuthService.verification(otp);
+    res.status(200).json({
+      success: true,
+      data: result,
+      message: "OTP verified",
     });
   } catch (error) {
     next(error);
@@ -37,4 +59,5 @@ const login = async (
 export const AuthController = {
   register,
   login,
+  otp,
 };

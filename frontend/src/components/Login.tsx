@@ -16,6 +16,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { handleLogin } from "@/app/login/actions";
 import { redirect, useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
+import { useToast } from "./ui/use-toast";
 
 const backgroundImageUrl =
   "https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-16-1.jpg";
@@ -75,12 +76,26 @@ const customTheme = createTheme({
 
 export default function Login({}: {}) {
   const { token, user, setCookie } = useContext(UserContext);
+  const { toast } = useToast();
+  const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email") as string;
     const password = data.get("password") as string;
-    handleLogin(setCookie, { email, password });
+    if (!email || !password) {
+      // return toast({
+      //   variant: "error",
+      //   title: "Email and password are required",
+      // });
+      // toast.error("Email and password are required");
+      toast({
+        variant: "error",
+        title: "Email and password are required",
+      });
+      return;
+    }
+    handleLogin(router, setCookie, toast, { email, password });
   };
 
   useEffect(() => {

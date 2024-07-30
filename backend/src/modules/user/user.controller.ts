@@ -96,10 +96,68 @@ const findByEmail = async (
   }
 };
 
+const updateMe = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { id } = req.body.user;
+    const { name, password } = req.body;
+    const user = await UserService.update(id, { name, password });
+    res.status(200).json({
+      success: true,
+      data: user,
+      message: `User with id ${id} updated`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateOne = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { name, password, role } = req.body;
+    const user = await UserService.update(id, { name, password, role });
+    res.status(200).json({
+      success: true,
+      data: user,
+      message: `User with id ${id} updated`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteOne = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: Express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    await UserService.deleteOne(id);
+    res.status(200).json({
+      success: true,
+      message: `User with id ${id} deleted`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const UserController = {
   create,
   findAll,
   findById,
   findByEmail,
   me,
+  updateMe,
+  updateOne,
+  deleteOne,
 };

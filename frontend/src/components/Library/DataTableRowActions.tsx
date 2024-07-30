@@ -21,8 +21,8 @@ import { SERVER_API_URL } from "@/lib/config/const";
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "@/context/UserContext";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useToast } from "../ui/use-toast";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -34,6 +34,7 @@ export function DataTableRowActions<TData>({
   table,
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
+  const { toast } = useToast();
 
   const document = documentSchema.parse(row.original);
 
@@ -51,15 +52,17 @@ export function DataTableRowActions<TData>({
         }
       );
       if (!data || data.success == false) {
-        throw new Error("Failed to delete document");
+        toast({
+          variant: "error",
+          title: "Error",
+        });
+        return;
       }
-      console.log("table: ", table.options);
       // await table.refetch();
       // await table.options.meta.refetch();
       // router.refresh();
       window.location.reload();
       // redirect("/dashboard");
-      console.log("table1: ", table.options);
       return data.data;
     },
   });
@@ -78,19 +81,7 @@ export function DataTableRowActions<TData>({
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem>Edit</DropdownMenuItem>
         <DropdownMenuItem>Favorite</DropdownMenuItem>
-        {/* <DropdownMenuSeparator /> */}
-        {/* <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub> */}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => deleteDocument()}>
           Delete

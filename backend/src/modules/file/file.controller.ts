@@ -81,6 +81,24 @@ const findMine = async (
   }
 };
 
+const findByUserId = async (
+  req: Express.Request,
+  res: Express.Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.params;
+    const files = await FileService.findByUserId(userId);
+    res.status(200).json({
+      success: true,
+      data: files,
+      message: `${files.length} files found`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteOne = async (
   req: Express.Request,
   res: Express.Response,
@@ -120,6 +138,7 @@ export const FileController = {
   findAll,
   findById,
   findMine,
+  findByUserId,
   deleteOne,
   deleteMany,
 };

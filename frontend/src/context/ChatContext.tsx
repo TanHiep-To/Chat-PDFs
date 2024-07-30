@@ -26,7 +26,7 @@ export type TChatContext = {
   message: string;
   messagesFetched: InfiniteData<TMessageFetched, unknown> | undefined;
   fetchNextPage: () => void;
-  addMessage: () => void;
+  addMessage: (content?: string) => void;
   handleUserInputChange: (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
@@ -164,8 +164,8 @@ export const ChatContextProvider = ({ children, token, fileId }: Props) => {
     }
   }, [data]);
 
-  const addMessage = async () => {
-    sendMessage({ content: message });
+  const addMessage = async (content: string = message) => {
+    sendMessage({ content: content });
     await refetch();
   };
 

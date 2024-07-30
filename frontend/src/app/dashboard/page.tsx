@@ -2,22 +2,19 @@ import Navbar from "@/components/NavBar";
 import { cookies } from "next/headers";
 import React from "react";
 import { Layout, Body, Header } from "@/components/Layout";
-import { UploadDropzone } from "@/components/UploadthingUI";
-import FileUpload from "@/components/FileUpload";
 import { redirect } from "next/navigation";
 import { DataTable } from "@/components/Library/DataTable";
 import { getFiles } from "./actions";
 import { columns } from "@/components/Library/Columns";
+import { useToast } from "@/components/ui/use-toast";
 
 export default async function page() {
-  // const router = useRouter();
   const cookieStore = cookies();
   if (!cookieStore.get("token")) {
     redirect("/login");
   }
   const token = cookieStore.get("token")!.value || "";
   const files = await getFiles(token);
-  // console.log("data: ", files);
   if (!files || files.success === false) {
     console.log("files not found");
   }

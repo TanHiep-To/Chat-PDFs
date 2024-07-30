@@ -1,11 +1,12 @@
+import { toast } from "@/hooks/use-toast";
 import { SERVER_API_URL } from "@/lib/config/const";
 import { IResponse } from "@/lib/interfaces";
 import axios from "axios";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { redirect } from "next/navigation";
 
 export const handleLogin = async (
+  router: any,
   setCookie: any,
+  toast: any,
   { email, password }: { email: string; password: string }
 ) => {
   try {
@@ -14,14 +15,24 @@ export const handleLogin = async (
       password,
     });
     const data: IResponse = response.data;
+    console.log("data", data);
     if (data.success == true) {
       setCookie("token", data.data.token);
-      console.log("login success");
-      redirect("/dashboard");
+      toast({
+        variant: "success",
+        title: data.message,
+      });
+      router.push("/dashboard");
     } else {
-      console.log("login failed");
+      toast({
+        variant: "error",
+        title: data.message,
+      });
     }
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    toast({
+      variant: "error",
+      title: error.response.data.message,
+    });
   }
 };

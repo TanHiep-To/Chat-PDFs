@@ -60,12 +60,9 @@ export function DataTable<TData, TValue>({
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("data: ", data.data);
       return data.data;
     },
   });
-
-  React.useEffect(() => {}, [files]);
 
   const table = useReactTable({
     data: tableData,

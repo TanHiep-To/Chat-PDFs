@@ -8,6 +8,7 @@ interface UserContextType {
   user?: any;
   setCookie: (name: string, value: any) => void;
   deleteCookie: (name: string) => void;
+  // toast: any;
 }
 
 const initialUser: UserContextType = {
@@ -15,6 +16,7 @@ const initialUser: UserContextType = {
   user: {},
   setCookie: (name: string, value: any) => {},
   deleteCookie: (name: string) => {},
+  // toast: {},
 };
 
 export const UserContext = createContext<UserContextType>(initialUser);
@@ -23,14 +25,12 @@ export const UserProvider = ({
   children,
   token,
   user,
-  // setUser,
   setCookie,
   deleteCookie,
 }: {
   children: React.ReactNode;
   token: string;
   user: Partial<IUser>;
-  // setUserData: Dispatch<SetStateAction<UserDataContextType>>;
   setCookie: (name: string, value: any) => void;
   deleteCookie: (name: string) => void;
 }) => {

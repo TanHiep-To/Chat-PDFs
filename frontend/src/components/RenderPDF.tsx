@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +34,7 @@ import {
 } from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
+import PDFInteract from "./PDFInteract";
 
 if (typeof Promise.withResolvers === "undefined") {
   if (window)
@@ -47,7 +49,6 @@ if (typeof Promise.withResolvers === "undefined") {
     };
 }
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 // pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -57,6 +58,58 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/l
 interface Props {
   url: string;
 }
+
+const File = ({ url, numberPages }: { url: string; numberPages?: number }) => {
+  return (
+    <Document
+      // onMouseUp={handleMouseUp}
+      file={url}
+      // loading={
+      //   <div className=" flex justify-center">
+      //     <Loader2 className=" w-8 animate-spin text-primary" />
+      //   </div>
+      // }
+      // onLoadSuccess={({ numPages }) => setNumberPages(numPages)}
+      // onLoadError={() => {
+      //   console.log("Error loading PDF");
+      // return toast({
+      //   title: "There was an error rendering the PDF",
+      //   description: "Please try again later",
+      //   variant: "destructive",
+      // });
+      // }}
+      // className="max-h-full w-full"
+    >
+      {/* {isLoading && renderedScale ? (
+                <Page
+                  key={"page_scale" + currPage + renderedScale}
+                  pageNumber={currPage}
+                  scale={scale}
+                  rotate={rotation}
+                  width={width ? width : 1}
+                  renderTextLayer={false}
+                />
+              ) : null} */}
+      {Array.apply(null, Array(numberPages))
+        .map((x, i) => i + 1)
+        .map((page) => (
+          <Page
+            key={"page" + page}
+            pageNumber={page}
+            // width={width ? width : 1}
+            loading={
+              <div className="flex justify-center">
+                <Loader2 className="my-24 h-8 w-8 animate-spin text-primary" />
+              </div>
+            }
+            // renderTextLayer={false}
+            // renderAnnotationLayer={false}
+            // customTextRenderer={false}
+          />
+        ))}
+    </Document>
+  );
+};
 
 const RenderPDF = ({ url }: Props) => {
   const [numberPages, setNumberPages] = useState<number>();
@@ -162,6 +215,16 @@ const RenderPDF = ({ url }: Props) => {
           <PDFViewer url={url} />
         </div>
         <div className="space-x-2">
+          {/* <div className="w-2 h-2">
+            <PDFDownloadLink
+              document={<File url={url} numberPages={numberPages} />}
+              fileName={`${url.split("/").pop()}.pdf`}
+            >
+              {({ loading }) =>
+                loading ? "Loading document..." : "Download now!"
+              }
+            </PDFDownloadLink>
+          </div> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -195,70 +258,15 @@ const RenderPDF = ({ url }: Props) => {
         </div>
       </div>
 
-      <div className=" w-full flex-1">
-        <SimpleBar
-          autoHide={false}
-          // className={cn(
-          //   "w-[780px] flex max-h-[calc(100vh-10rem)] overflow-x-scroll overflow-y-scroll]",
-          //   {
-          //     "justify-center": scale <= 1,
-          //     "justify-around": scale > 1,
-          //   }
-          // )}
-          className="w-[780px] flex justify-center max-h-[calc(100vh-10rem)] overflow-x-scroll overflow-y-scroll"
-        >
-          <div ref={ref}>
-            <Document
-              file={url}
-              loading={
-                <div className=" flex justify-center">
-                  <Loader2 className=" w-8 animate-spin text-primary" />
-                </div>
-              }
-              onLoadSuccess={({ numPages }) => setNumberPages(numPages)}
-              onLoadError={() => {
-                console.log("Error loading PDF");
-                // return toast({
-                //   title: "There was an error rendering the PDF",
-                //   description: "Please try again later",
-                //   variant: "destructive",
-                // });
-              }}
-              className="max-h-full w-full"
-            >
-              {/* {isLoading && renderedScale ? (
-                <Page
-                  key={"page_scale" + currPage + renderedScale}
-                  pageNumber={currPage}
-                  scale={scale}
-                  rotate={rotation}
-                  width={width ? width : 1}
-                  renderTextLayer={false}
-                />
-              ) : null} */}
-              {Array.apply(null, Array(numberPages))
-                .map((x, i) => i + 1)
-                .map((page) => (
-                  <Page
-                    key={"page" + page}
-                    pageNumber={page}
-                    scale={scale}
-                    rotate={rotation}
-                    // width={width ? width : 1}
-                    loading={
-                      <div className="flex justify-center">
-                        <Loader2 className="my-24 h-8 w-8 animate-spin text-primary" />
-                      </div>
-                    }
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    // customTextRenderer={false}
-                  />
-                ))}
-            </Document>
-          </div>
-        </SimpleBar>
-      </div>
+      <PDFInteract
+        // ref={ref}
+        url={url}
+        scale={scale}
+        rotation={rotation}
+        // width={width}
+        numberPages={numberPages!}
+        setNumberPages={setNumberPages}
+      />
     </div>
   );
 };

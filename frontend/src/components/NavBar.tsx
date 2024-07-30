@@ -1,29 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { LogInIcon, Rocket, Sprout } from "lucide-react";
+import { LogInIcon, Sprout } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import UserAccountDropdown from "./AvatarDropdown";
 
-import WrapWidth from "@/components/ui/WrapWidth";
+import WrapWidth from "@/components/WrapWidth";
 
 import { buttonVariants } from "./ui/button";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "./Search";
 import { UserContext } from "@/context/UserContext";
 // import { UserContext } from "@/context/UserContext";
 
-const Navbar = ({}: // cookieStore,
-// setCookie,
-// deleteCookie,
-// user,
-{
-  // cookieStore: any;
-  // setCookie: any;
-  // deleteCookie: any;
-  // user: any;
-}) => {
+const Navbar = () => {
   const router = useRouter();
   const { token, user } = useContext(UserContext);
   useEffect(() => {

@@ -142,14 +142,12 @@ const ChatBox = ({ fileId }: Props) => {
   }
 
   return (
-    <ChatContextProvider token={token} fileId={fileId}>
-      <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
-        <div className="mb-28 flex flex-1 flex-col justify-between">
-          <Messages />
-        </div>
-        <ChatInput />
+    <div className="relative flex min-h-full flex-col justify-between gap-2 divide-y divide-zinc-200 bg-zinc-50">
+      <div className="mb-28 flex flex-1 flex-col justify-between">
+        <Messages />
       </div>
-    </ChatContextProvider>
+      <ChatInput />
+    </div>
   );
 };
 

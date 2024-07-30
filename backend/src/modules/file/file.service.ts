@@ -108,6 +108,23 @@ const deleteMany = async (ids: string[]): Promise<void> => {
   });
 };
 
+const deleteByUserId = async (userId: string): Promise<void> => {
+  const files = await AppDataSource.getRepository(File).find({
+    relations: {
+      user: true,
+    },
+    where: {
+      user: {
+        id: userId,
+      },
+    },
+  });
+
+  files.forEach(async (file) => {
+    await deleteOne(file.id);
+  });
+};
+
 export const FileService = {
   create,
   findAll,
@@ -115,4 +132,5 @@ export const FileService = {
   findByUserId,
   deleteOne,
   deleteMany,
+  deleteByUserId,
 };

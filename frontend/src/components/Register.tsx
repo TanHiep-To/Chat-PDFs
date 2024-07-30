@@ -15,8 +15,9 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import Container from "@mui/material/Container";
-import { handleRegister } from "@/app/register/actions";
 import { UserContext } from "@/context/UserContext";
+import { handleRegister } from "@/app/register/actions";
+import { useToast } from "./ui/use-toast";
 
 const backgroundImageUrl =
   "https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-16-1.jpg";
@@ -85,6 +86,9 @@ const customTheme = createTheme({
 });
 
 export default function Register() {
+  const router = useRouter();
+  const { toast } = useToast();
+  // const { token, user, setCookie } = useContext(UserContext);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -92,7 +96,14 @@ export default function Register() {
     const lastName = data.get("lastName") as string;
     const email = data.get("email") as string;
     const password = data.get("password") as string;
-    handleRegister({ firstName, lastName, email, password });
+    if (!firstName || !lastName || !email || !password) {
+      toast({
+        variant: "error",
+        title: "All fields are required",
+      });
+      return;
+    }
+    handleRegister(router, toast, { firstName, lastName, email, password });
   };
 
   return (
